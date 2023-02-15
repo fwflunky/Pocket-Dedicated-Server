@@ -16,8 +16,6 @@ void MinecraftCommands::initHooks(void *handle) {
 }
 
 void MinecraftCommands::registerSingleStepCommand(const std::string &s, int i, const std::string &ss, const CommandType &ct, std::function<MCRESULT (const CommandOrigin &, const CommandPropertyBag &, CommandPropertyBag &)> fun) {
-    std::cout << s << " " << i << " " << ss << " " << (int) ct  << "\n";
-    //std::cout << sizeof(ct) << "\n";
     MinecraftCommands_registerSingleStepCommand(this, s, i, ss, ct, std::move(fun));
 }
 

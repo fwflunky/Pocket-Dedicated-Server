@@ -13,7 +13,9 @@ CMakeFiles/
 CMakeCache.txt
 FindEGL.cmake
 build.ninja
+.ninja_log
 .ninja_deps
+serverGamemode/storage/
 libs/libminecraftpe.so
 libs/libgnustl_shared.so
 *.apk

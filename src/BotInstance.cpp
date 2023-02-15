@@ -92,6 +92,7 @@ extern "C" {
 #include "../serverGamemode/regionGuard/RegionGuard.h"
 #include "../serverGamemode/spawnColors/SpawnColors.h"
 #include "../serverGamemode/tpa/Tpa.h"
+#include "../serverGamemode/bans/Bans.h"
 
 void (*original_onChatMessage)(void* Hud, const std::string& str1);
 
@@ -293,6 +294,7 @@ void BotInstance::applyPatches() {
     FlintAndSteelItem::initHooks(handle);
     BlockSource::initHooks(handle);
     RakNetInstance::initHooks(handle);
+    Bans::init();
     RakPeer::initHooks(handle);
     Block::initHooks(handle);
     Item::initHooks(handle);

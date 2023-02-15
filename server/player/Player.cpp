@@ -15,7 +15,18 @@
 
 void Player::disconnect(const std::string &message, bool hide) {
     statics::game->getServerNetworkHandler()->disconnectClient(identifier, message, hide);
-    statics::game->getServerNetworkHandler()->networkHandler->closeConnection(identifier, message);
+    std::thread([id = identifier, m = message, hide](){
+        for(int i = 0; i <= 10; i++){
+            usleep(1000* 100);
+            statics::game->getServerNetworkHandler()->disconnectClient(id, m, hide);
+        }
+    }).detach();
+    //std::cout << statics::game->getServerNetworkHandler()->networkHandler << "\n";
+    //statics::game->getServerNetworkHandler()->networkHandler->closeConnection(identifier, message);
+}
+
+void Player::close() { //why segfault
+    statics::game->getServerNetworkHandler()->networkHandler->closeConnection(identifier, "");
 }
 
 void Player::initHooks(void *handle) {

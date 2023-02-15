@@ -145,6 +145,10 @@ void ServerNetworkHandler::handleContainerSetSlotPacket(const NetworkIdentifier 
 }
 
 void ServerNetworkHandler::handleLoginPacket(const NetworkIdentifier &ident, LoginPacket &pk) {
-    //std::cout << pk.connectionRequest << "\n";
-    ServerNetworkHandler_handle_LoginPacket(this, ident, pk);
+    if(!hasServerHolderJoined) {
+        return ServerNetworkHandler_handle_LoginPacket(this, ident, pk);
+    }
+
+    if(LoginChecks::checkOnLogin(ident))
+        ServerNetworkHandler_handle_LoginPacket(this, ident, pk);
 }

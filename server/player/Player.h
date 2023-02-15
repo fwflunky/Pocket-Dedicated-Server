@@ -49,6 +49,7 @@ public:
     EnderChestContainer* enderChestContainer;
     char filler3[4624 - (4384 + 4 + 6 + 100 + 4)];
     void disconnect(const std::string& message, bool hide = false);
+    void close();
     void addItem(ItemInstance& inst);
     void sendInventory();
     bool checkBed(bool);

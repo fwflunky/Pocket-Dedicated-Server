@@ -10,7 +10,7 @@
 
 class LoginChecks {
 public:
-    static bool checkOnLogin(); //todo
+    static bool checkOnLogin(const NetworkIdentifier& identifier); //todo
     static bool checkOnSpawn(Player& p);
 };
 

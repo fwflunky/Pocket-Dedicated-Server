@@ -17,7 +17,6 @@ public:
     } address;
     unsigned short debugPort;
     unsigned short systemIndex;
-    int padding;
 };
 
 class RakNetGUID {
@@ -27,17 +26,27 @@ public:
     int padding;
 };
 
+class AddressOrGUID {
+public:
+    RakNetGUID rakNetGuid;
+    SystemAddress systemAddress;
+};
+
 class RakPeer {
 public:
     static void initHooks(void *handle);
     static inline SystemAddress (*RakPeer_GetSystemAddressFromGuid)(RakPeer*, const RakNetGUID input) = nullptr;
     static inline int (*RakPeer_NumberOfConnections)(RakPeer*) = nullptr;
+    static inline void (*RakPeer_CloseConnection)(RakPeer*, AddressOrGUID, bool, unsigned char, int) = nullptr;
+    //static inline bool (*RakPeer_opeq)(RakNetGUID*, RakNetGUID const&) = nullptr;
 
     SystemAddress GetSystemAddressFromGuid(const RakNetGUID input);
     int NumberOfConnections();
+    void CloseConnection(AddressOrGUID a, bool send, unsigned char rel, int prior);
 
     char filler[16];
     unsigned int maxIncomingConnections;
+   // static bool opeq(RakNetGUID*a , RakNetGUID const& s);
 };
 
 
