@@ -1,6 +1,6 @@
 ![Logo](https://i.ibb.co/rbzqcPc/20230215-225158.png)
 
-# Pocket Dedicaed Server
+# Pocket Dedicated Server
 Vanilla (or not so) server software for [Minecraft: Pocket Edition 1.1](https://minecraft.fandom.com/wiki/Pocket_Edition_1.1.0)
 ## Features
 
