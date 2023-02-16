@@ -6,7 +6,7 @@
 #include <arpa/inet.h>
 #include <thread>
 #include "LoginChecks.h"
-#include "../server/level/Level.h"
+#include "../../server/level/Level.h"
 #include "../../server/whitelist/Whitelist.h"
 #include "../../server/statics.h"
 #include "../../server/network/packets/SetTitlePacket.h"
@@ -80,7 +80,7 @@ bool LoginChecks::checkOnLogin(const NetworkIdentifier &identifier) {
     auto reason = Bans::isIpBanned(str);
     if(!reason.empty()){
         //statics::serverNetworkHandler->disconnectClient(identifier, "", true); //не надо показывать причину
-        statics::minecraft->disconnectClient(identifier, "banned");
+        statics::minecraft->disconnectClient(identifier, "");
         //serverPeer->CloseConnection({.rakNetGuid = {.g = identifier.id}, .systemAddress = sa}, true, 0, 0);
         //statics::game->getServerNetworkHandler()->networkHandler->closeConnection(identifier, reason); //why that works and not works in player
         return false;

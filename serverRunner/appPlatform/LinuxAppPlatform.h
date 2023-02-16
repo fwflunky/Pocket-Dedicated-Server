@@ -3,7 +3,7 @@
 #include <string>
 #include <unistd.h>
 #include <sys/param.h>
-#include "../serverRunner/appPlatform/AppPlatform.h"
+#include "../appPlatform/AppPlatform.h"
 
 class ImageData;
 class ImagePickingCallback;

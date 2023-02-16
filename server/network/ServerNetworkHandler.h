@@ -6,8 +6,8 @@
 #define MCPELAUNCHER_SERVERNETWORKHANDLER_H
 
 
-#include "../server/entity/Entity.h"
-#include "../server/player/Player.h"
+#include "../entity/Entity.h"
+#include "../player/Player.h"
 #include "../player/ServerPlayer.h"
 #include "packets/TextPacket.h"
 #include "ServerLocator.h"

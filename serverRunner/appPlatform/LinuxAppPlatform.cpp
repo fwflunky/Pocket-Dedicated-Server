@@ -9,11 +9,10 @@
 #include <uuid/uuid.h>
 #include <sys/types.h>
 #include <sys/sysinfo.h>
-#include "../hybris/src/jb/linker.h"
+#include "../../hybris/src/jb/linker.h"
 
 extern "C" {
-#include <eglut.h>
-#include "../hybris/include/hybris/dlfcn.h"
+#include "../../hybris/include/hybris/dlfcn.h"
 }
 
 bool enablePocketGuis = false;
@@ -93,13 +92,10 @@ void LinuxAppPlatform::initVtable(void* lib) {
 }
 
 void LinuxAppPlatform::hideMousePointer() {
-    mousePointerHidden = true;
-//    moveMouseToCenter = true;
-    eglutSetMousePointerVisiblity(EGLUT_POINTER_INVISIBLE);
+
 }
 void LinuxAppPlatform::showMousePointer() {
-    mousePointerHidden = false;
-    eglutSetMousePointerVisiblity(EGLUT_POINTER_VISIBLE);
+
 }
 
 std::string LinuxAppPlatform::_pickFile(std::string commandLine) {

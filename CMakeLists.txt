@@ -1,22 +1,16 @@
 cmake_minimum_required(VERSION 2.8)
 project(pdserver)
 
-enable_language(C ASM)
+enable_language(C)
 
 #SET(CMAKE_CXX_COMPILER "g++-4.9")
 #SET(CMAKE_C_COMPILER "gcc-4.9")
 
 find_package(Threads REQUIRED)
 find_package(ZLIB REQUIRED)
-find_package(X11 REQUIRED)
 find_package(OpenSSL REQUIRED)
 
-
-include(FindEGL.cmake)
-
 include_directories(${PNG_INCLUDE_DIRS})
-include_directories(${EGL_INCLUDE_DIRS})
-include_directories(eglut)
 
 include_directories(/home/user/range-v3/include)
 include_directories(/home/user/leveldb/include)
@@ -25,9 +19,6 @@ include_directories(/home/user/Видео/mcpelauncher-linux-2ebee1b9a70479685a4
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++23 -D_GLIBCXX_USE_CXX11_ABI=0")
 
 set(HYBRIS_SOURCES hybris/src/cache.c hybris/src/dlfcn.c hybris/src/hooks.c hybris/src/hooks_shm.c hybris/src/logging.c hybris/src/properties.c hybris/src/strlcpy.c hybris/src/sysconf.c hybris/src/jb/dlfcn.c hybris/src/jb/linker.c hybris/src/jb/linker_environ.c hybris/src/jb/linker_format.c hybris/src/jb/rt.c)
-set(EGLUT_SOURCES eglut/eglut.c eglut/eglut_x11.c )
-
-
 
 set(SOURCE_FILES serverRunner/resourcePack/ResourcePackStack.cpp serverRunner/minecraftGame/Minecraft.cpp serverRunner/scheduler/Scheduler.cpp serverRunner/uuid/UUID.cpp serverRunner/ServerInstance.cpp serverRunner/userManager/UserManager.cpp serverRunner/entitlement/EntitlementManager.cpp serverRunner/resourcePack/ResourcePackRepository.cpp serverRunner/resourcePack/PackManifestFactory.cpp serverRunner/resourcePack/ResourcePackManager.cpp serverRunner/filePathManager/FilePathManager.cpp serverRunner/Loader.cpp serverRunner/level/LevelSettings.cpp serverRunner/minecraftGame/DedicatedMinecraftApp.cpp server/network/packets/UseItemPacket.cpp server/network/packets/LoginPacket.cpp server/network/connectionRequest/ConnectionRequest.cpp server/player/certificate/Certificate.cpp serverGamemode/loginChecks/LoginChecks.cpp server/network/networkHandler/RakPeer.cpp server/network/networkHandler/RakNetInstance.cpp serverGamemode/bans/Bans.cpp server/player/inventory/LevelContainerModel.cpp server/player/inventory/ContainerManagerController.cpp serverGamemode/AntiCheat/Item.cpp server/network/packets/ContainerSetSlotPacket.cpp server/network/packets/MovePlayerPacket.cpp serverGamemode/tpa/Tpa.cpp serverGamemode/customCommands/CustomCommands.cpp server/entity/mob/MobEffectInstance.cpp server/network/packets/SetTitlePacket.cpp serverGamemode/enderChestBonus/EnderChestBonus.cpp server/player/inventory/Container.cpp server/player/inventory/EnderChestContainer.cpp server/entity/classes/Arrow.cpp serverGamemode/spawnColors/SpawnColors.cpp server/commands/ServerCommands.cpp server/commands/Command.cpp server/commands/PlayerCommandOrigin.cpp server/commands/CommandOrigin.cpp server/commands/CommandPropertyBag.cpp server/commands/MinecraftCommands.cpp server/entity/monster/Monster.cpp server/level/LevelListener.cpp server/level/BlockSourceListener.cpp server/level/explodeComponent/ExplodeComponent.cpp server/network/packets/UpdateBlockPacket.cpp server/network/packets/TextPacket.cpp server/level/chunk/ChunkPos.cpp server/level/chunk/ChunkSource.cpp server/level/chunk/LevelChunk.cpp server/entity/teleportComponent/TeleportComponent.cpp server/math/aabb/AABB.cpp serverGamemode/regionGuard/RegionGuard.cpp serverGamemode/regionGuard/Region.cpp server/entity/damageSource/EntityDamageSource.cpp server/entity/mob/Mob.cpp server/entity/SynchedEntityData.cpp server/whitelist/Whitelist.cpp server/MinecraftObjectLayer.cpp server/player/inventory/InventoryFixer.cpp server/network/networkPeer/CompressedNetworkPeer.cpp server/network/networkPeer/BatchedNetworkPeer.cpp server/network/networkPeer/NetworkPeer.cpp server/network/networkPeer/EncryptedNetworkPeer.cpp server/network/networkHandler/Connection.cpp server/network/networkHandler/NetworkHandler.cpp server/network/packets/MinecraftPackets.cpp server/block/Block.cpp server/level/BlockSource.cpp server/player/inventory/FillingContainer.cpp server/player/inventory/PlayerInventoryProxy.cpp server/math/vec2/Vec2.cpp server/player/inventory/Inventory.cpp server/item/Item.cpp server/item/blockItem/BlockItem.cpp server/item/ItemInstance.cpp server/level/BlockPos.cpp server/gameMode/GameMode.cpp server/gameMode/SurvivalMode.cpp server/math/vec3/Vec3.cpp server/raknet/RakNetServerLocator.cpp server/level/Dimension.cpp server/eventing/MinecraftEventing.cpp server/statics.cpp server/network/ServerNetworkHandler.cpp server/player/ServerPlayer.cpp server/level/Level.cpp server/network/NetworkIdentifier.cpp server/player/Player.cpp server/entity/Entity.cpp serverRunner/minecraftGame/api/Api.cpp src/main.cpp src/common.cpp src/hook.cpp serverRunner/appPlatform/LinuxAppPlatform.cpp /home/user/CLionProjects/mcpeproxy_v2/SHA256/SHA256.cpp /home/user/CLionProjects/mcpeproxy_v2/utils/uuid.cpp /home/user/CLionProjects/mcpeproxy_v2/utils/string.cpp /home/user/CLionProjects/mcpeproxy_v2/item/item.cpp /home/user/CLionProjects/mcpeproxy_v2/packets/encryption/encryption.cpp /home/user/CLionProjects/mcpeproxy_v2/packets/binary/BinaryStream.cpp /home/user/CLionProjects/mcpeproxy_v2/packets/binary/Binary.cpp)
 add_executable(pdserver ${HYBRIS_SOURCES} ${EGLUT_SOURCES} ${SOURCE_FILES})
