@@ -3,7 +3,6 @@
 //
 
 #include "ServerNetworkHandler.h"
-#include "../../mcpe/MinecraftGame.h"
 #include "../../hybris/include/hybris/dlfcn.h"
 #include "../../src/hook.h"
 #include "../player/ServerPlayer.h"
@@ -49,14 +48,6 @@ void ServerNetworkHandler::initHooks(void *handle) {
 void ServerNetworkHandler::onReady_ClientGeneration(Player &p, NetworkIdentifier &ne) {
     auto name = p.nickname;
 
-    if (name.empty() && !hasServerHolderJoined) {
-        statics::serverNetworkHandler = this;
-        hasServerHolderJoined = true;
-        std::cout << "Server holder joined\n";
-        p.addEffect({14, 20 * 99999999, 0});
-        return;
-    }
-
     if(LoginChecks::checkOnSpawn(p))
         ServerNetworkHandler_onReady_ClientGeneration(this, p, ne);
 }
@@ -70,7 +61,7 @@ void ServerNetworkHandler::_displayGameMessage(const std::string &pref, const st
 }
 
 int ServerNetworkHandler::_getActivePlayerCount() {
-    return ServerNetworkHandler__getActivePlayerCount(this) - 1; //without server holder
+    return ServerNetworkHandler__getActivePlayerCount(this);
 }
 
 ServerPlayer *ServerNetworkHandler::_getServerPlayer(const NetworkIdentifier &i) {
@@ -106,7 +97,7 @@ void ServerNetworkHandler::setMaxPlayers(int count) {
 }
 
 void ServerNetworkHandler::updateServerAnnouncement() const {
-    serverLocator->announceServer(serverMOTD, serverCore, 2, currentPlayerCount - 1, maxPlayersCount);
+    serverLocator->announceServer(serverMOTD, serverCore, 2, currentPlayerCount, maxPlayersCount);
 }
 
 void ServerNetworkHandler::handleUseItemPacket(const NetworkIdentifier &ident, UseItemPacket &pk) {
@@ -136,8 +127,8 @@ void ServerNetworkHandler::handleCommandStepPacket(const NetworkIdentifier &iden
 }
 
 void ServerNetworkHandler::handleContainerSetSlotPacket(const NetworkIdentifier &ident, ContainerSetSlotPacket &pk) {
-    if(pk.item.count != 0)
-        std::cout << pk.item.itemOrBlock->fullName << "\n";
+    //if(pk.item.count != 0)
+    //    std::cout << pk.item.itemOrBlock->fullName << "\n";
     if(!AntiCheat::Item::onContainerSetSlotPacket(_getServerPlayer(ident), pk)) {
         return;
     }
@@ -145,10 +136,6 @@ void ServerNetworkHandler::handleContainerSetSlotPacket(const NetworkIdentifier 
 }
 
 void ServerNetworkHandler::handleLoginPacket(const NetworkIdentifier &ident, LoginPacket &pk) {
-    if(!hasServerHolderJoined) {
-        return ServerNetworkHandler_handle_LoginPacket(this, ident, pk);
-    }
-
     if(LoginChecks::checkOnLogin(ident))
         ServerNetworkHandler_handle_LoginPacket(this, ident, pk);
 }

@@ -48,12 +48,12 @@ bool GameMode::useItemOn(Player &p, ItemInstance &i, const BlockPos &pos, char c
     //std::cout << (int) bs.getBlockID(pos)<< " is block tapped\n";
   //  auto cb = bs.getBlockID(pos);
     auto tt = bs.getBlockAndData(pos);
-    p.sendMessage("Нажал на " + bs.getBlock(pos)->blockName);
+    /*p.sendMessage("Нажал на " + bs.getBlock(pos)->blockName);
     p.sendMessage("Ид " + std::to_string((int)bs.getBlock(pos)->blockId));
     p.sendMessage("Ид getBlockID " + std::to_string((int)bs.getBlockID(pos).id));
     p.sendMessage("Ид getBlockAndData " + std::to_string((int)tt.id));
     p.sendMessage("Позиция: " + pos.toString());
-    p.sendMessage("Дата: " + std::to_string((int) tt.data));
+    p.sendMessage("Дата: " + std::to_string((int) tt.data));*/
 
     auto r = GameMode_useItemOn(this,p,i,pos,c,vec);
     //p.sendInventory();

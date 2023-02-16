@@ -22,6 +22,7 @@ public:
     static inline void (*ServerPlayer_displayWhisperMessage)(ServerPlayer*, std::string const&, std::string const&) = nullptr;
     static inline bool (*ServerPlayer__sendQueuedChunk)(ServerPlayer*, QueuedChunk const&) = nullptr;
     static inline void (*ServerPlayer_openInventory)(ServerPlayer*) = nullptr;
+    static inline void (*ServerPlayer_setPlayerGameType)(ServerPlayer*, int) = nullptr;
 
     NetworkHandler::NetworkHandler* networkHandler;
     char filler[4772 - (4626+4)];
@@ -30,6 +31,7 @@ public:
     void displayWhisperMessage(std::string const&, std::string const&);
     bool _sendQueuedChunk(QueuedChunk const& ch);
     void openInventory();
+    void setPlayerGameType(int type);
 };
 
 #endif //MCPELAUNCHER_SERVERPLAYER_H

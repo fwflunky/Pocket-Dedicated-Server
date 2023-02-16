@@ -5,6 +5,7 @@
 #include <packets/binary/BinaryStream.h>
 #include <packets/simplePackets/movePlayer.h>
 #include <arpa/inet.h>
+#include <thread>
 #include "Player.h"
 #include "../level/Level.h"
 #include "../statics.h"
@@ -14,11 +15,11 @@
 #include "../../serverGamemode/AntiCheat/Item.h"
 
 void Player::disconnect(const std::string &message, bool hide) {
-    statics::game->getServerNetworkHandler()->disconnectClient(identifier, message, hide);
+    statics::serverNetworkHandler->disconnectClient(identifier, message, hide);
     std::thread([id = identifier, m = message, hide](){
         for(int i = 0; i <= 10; i++){
             usleep(1000* 100);
-            statics::game->getServerNetworkHandler()->disconnectClient(id, m, hide);
+            statics::serverNetworkHandler->disconnectClient(id, m, hide);
         }
     }).detach();
     //std::cout << statics::game->getServerNetworkHandler()->networkHandler << "\n";
@@ -26,7 +27,7 @@ void Player::disconnect(const std::string &message, bool hide) {
 }
 
 void Player::close() { //why segfault
-    statics::game->getServerNetworkHandler()->networkHandler->closeConnection(identifier, "");
+    //statics::game->getServerNetworkHandler()->networkHandler->closeConnection(identifier, "");
 }
 
 void Player::initHooks(void *handle) {
@@ -91,7 +92,7 @@ void Player::sendPopup(const std::string &msg) const {
 
 bool Player::_hurt(const EntityDamageSource &s, int i, bool b, bool bb) {
     //auto ss = s.damager; //todo EntityDamageSource full
-    std::cout << s.entityDamageCause << "\n";
+    //std::cout << s.entityDamageCause << "\n";
         if (s.entityDamageCause == 2 || s.entityDamageCause == 3) { //todo NORMAL check for monster (typeid, etc)
             auto reg = RegionGuard::getRegionWhereVec(this->getDimension()->dimensionId, {s.damager->x, s.damager->y, s.damager->z});
             if (reg) {

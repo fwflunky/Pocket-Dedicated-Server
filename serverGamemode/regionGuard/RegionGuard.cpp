@@ -273,7 +273,6 @@ void RegionGuard::handleStage(ServerPlayer *player, RegionGuard::tempCreation& s
 
         //todo threaded
         AABB aabb(stage.start, stage.end);
-
         {
             std::scoped_lock<std::mutex> lock(mux);
             for (const auto &reg: playerRegions) {

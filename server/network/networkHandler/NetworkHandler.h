@@ -16,15 +16,21 @@ namespace NetworkHandler {
     public:
         static void initHooks(void *handle);
         static inline BatchedNetworkPeer* (*NetworkHandler_getPeerForUser)(NetworkHandler*, NetworkIdentifier const&) = nullptr;
+        static inline void (*NetworkHandler_ctor)(NetworkHandler*) = nullptr;
         static inline void (*NetworkHandler_closeConnection)(NetworkHandler*, NetworkIdentifier const&, std::string const&) = nullptr;
         static inline void (*NetworkHandler_send)(NetworkHandler*, NetworkIdentifier const&, Packet const&) = nullptr;
+
+        NetworkHandler();
         BatchedNetworkPeer* getPeerForUser(NetworkIdentifier const& i);
         void closeConnection(NetworkIdentifier const&, std::string const&);
         void send(NetworkIdentifier const&, Packet const&);
+
+
         void** vtable; //todo
         RakNetInstance* rakNetInstanceForServerLocator;
         char filler[2];
         RakNetInstance* rakNetInstanceForServerConnections;
+        char filler1[0x200];
     };
 }
 

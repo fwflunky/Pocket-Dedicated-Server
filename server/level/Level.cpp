@@ -17,6 +17,7 @@ void Level::initHooks(void *handle) {
     Level_getDimension = (Dimension* (*)(Level*, int)) hybris_dlsym(handle, "_ZNK5Level12getDimensionE11DimensionId");
     Level_suspendPlayer = (void (*)(Level*, Player&)) hybris_dlsym(handle, "_ZN5Level13suspendPlayerER6Player");
     Level_resumePlayer = (void (*)(Level*, Player&)) hybris_dlsym(handle, "_ZN5Level12resumePlayerER6Player");
+    Level_createDimension = (void (*)(Level*, int)) hybris_dlsym(handle, "_ZN5Level15createDimensionE11DimensionId");
     hookFunction((void *) hybris_dlsym(handle, "_ZN5Level4tickEv"), (void *) &Level::tick, (void **) &Level::Level_tick);
 }
 
@@ -53,16 +54,7 @@ Dimension *Level::getDimension(int d) {
 }
 
 void Level::tick() {
-    statics::onTickLock.lock();
-    if (statics::runFunc) {
-        statics::runFunc();
-    }
     Level_tick(this);
-    if (statics::runFunc) {
-        statics::runFunc = nullptr;
-        statics::waitForFuncRuns.unlock();
-    }
-    statics::onTickLock.unlock();
 }
 
 void Level::suspendPlayer(Player &p) {
@@ -71,4 +63,8 @@ void Level::suspendPlayer(Player &p) {
 
 void Level::resumePlayer(Player &p) {
     Level_resumePlayer(this, p);
+}
+
+void Level::createDimension(int id) {
+    Level_createDimension(this, id);
 }

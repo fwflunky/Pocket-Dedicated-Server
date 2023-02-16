@@ -19,3 +19,5 @@ serverGamemode/storage/
 libs/libminecraftpe.so
 libs/libgnustl_shared.so
 *.apk
+*.json
+games/

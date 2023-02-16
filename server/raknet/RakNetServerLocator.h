@@ -6,7 +6,7 @@
 #define MCPELAUNCHER_RAKNETSERVERLOCATOR_H
 
 #include <string>
-class __attribute__((packed)) RakNetServerLocator {
+class RakNetServerLocator {
 public:
     static void initHooks(void* handle);
     static inline void (*RakNetServerLocator_announceServer)(RakNetServerLocator*, std::string const&, std::string const&, int, int, int) = nullptr;

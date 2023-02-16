@@ -25,7 +25,7 @@ Vanilla (or not so) server software for [Minecraft: Pocket Edition 1.1](https://
 - [ ]  DoS Protection
 - [ ]  Exploit fixes (WIP)
 - [ ]  Inventory Cheats fixes (WIP)
-- [ ]  Standalone (WIP)
+- [x]  Standalone (WIP)
 ## Authors
 
 - [@fwflunky](https://www.github.com/fwflunky)

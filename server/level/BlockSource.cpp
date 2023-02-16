@@ -10,7 +10,6 @@
 #include "../../src/common.h"
 
 void BlockSource::initHooks(void *handle) {
-    std::cout << "BlockSourcector0\n";
     BlockSource_getBlockAndData = (BlockIDAndData (*)(BlockSource*, BlockPos const&)) hybris_dlsym(handle, "_ZN11BlockSource15getBlockAndDataERK8BlockPos");
     BlockSource_setBlockAndData = (bool (*)(BlockSource*, BlockPos const&, FullBlock, int, Entity*)) hybris_dlsym(handle, "_ZN11BlockSource15setBlockAndDataERK8BlockPos9FullBlockiP6Entity");
     BlockSource_getBlock = (Block* (*)(BlockSource*, BlockPos const&)) hybris_dlsym(handle, "_ZN11BlockSource8getBlockERK8BlockPos");

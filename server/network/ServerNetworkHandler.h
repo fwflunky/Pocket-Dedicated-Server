@@ -43,7 +43,6 @@ public:
     static inline void (*ServerNetworkHandler_handle_CommandStepPacket)(ServerNetworkHandler*, NetworkIdentifier const&, CommandStepPacket&) = nullptr;
     static inline void (*ServerNetworkHandler_handle_ContainerSetSlotPacket)(ServerNetworkHandler*, NetworkIdentifier const&, ContainerSetSlotPacket&) = nullptr;
     static inline void (*ServerNetworkHandler_handle_LoginPacket)(ServerNetworkHandler*, NetworkIdentifier const&, LoginPacket&) = nullptr;
-    static inline bool hasServerHolderJoined = false;
 
     void _displayGameMessage(const std::string& pref, const std::string& msg);
     void onReady_ClientGeneration(Player& p, NetworkIdentifier& ne);

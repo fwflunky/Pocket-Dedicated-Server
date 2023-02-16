@@ -4,6 +4,7 @@
 
 #include <algorithm>
 #include <arpa/inet.h>
+#include <thread>
 #include "LoginChecks.h"
 #include "../server/level/Level.h"
 #include "../../server/whitelist/Whitelist.h"
@@ -36,8 +37,8 @@ bool LoginChecks::checkOnSpawn(Player& p) { //todo block all packets if not spaw
     }
 
     if (!Whitelist::byNickIsAllowed(p.nickname)) {
-        p.disconnect("§bВход без проходки §fзапрещен\n§bКупить проходку можно в §fгруппе ВКонтакте\n§fvk.com/§batmospherepe");
-        return false;
+        //statics::minecraft->disconnectClient(p.identifier, "§bВход без проходки §fзапрещен\n§bКупить проходку можно в §fгруппе ВКонтакте\n§fvk.com/§batmospherepe");
+        //return false;
     }
    // Json::Value val("ss");
    // auto ss = p.certificate->getExtraData("idendtity", val);
@@ -50,19 +51,22 @@ bool LoginChecks::checkOnSpawn(Player& p) { //todo block all packets if not spaw
 
     p.sendMessage(p.getFuckingIpPortWithAccessToFuckingRakNetBruh().first);
 
-    SetTitlePacket pk;
+    std::thread([id = p.identifier]() {
+        sleep(2);
+        SetTitlePacket pk;
 
-    pk.fadeIn = 3;
-    pk.fadeOut = 1;
-    pk.duration = 3;
+        pk.fadeIn = 3;
+        pk.fadeOut = 1;
+        pk.duration = 3;
 
-    pk.type = 3;
-    pk.title = "§f§lPE";
-    statics::serverNetworkHandler->networkHandler->send(p.identifier, pk);
+        pk.type = 3;
+        pk.title = "§f§lPE";
+        statics::serverNetworkHandler->networkHandler->send(id, pk);
 
-    pk.type = 2;
-    pk.title = "§bAtmosphere";
-    statics::serverNetworkHandler->networkHandler->send(p.identifier, pk);
+        pk.type = 2;
+        pk.title = "§bAtmosphere";
+        statics::serverNetworkHandler->networkHandler->send(id, pk);
+    }).detach();
 
     return true;
 }
@@ -75,7 +79,8 @@ bool LoginChecks::checkOnLogin(const NetworkIdentifier &identifier) {
 
     auto reason = Bans::isIpBanned(str);
     if(!reason.empty()){
-        statics::game->getServerNetworkHandler()->disconnectClient(identifier, "", true); //не надо показывать причину
+        //statics::serverNetworkHandler->disconnectClient(identifier, "", true); //не надо показывать причину
+        statics::minecraft->disconnectClient(identifier, "banned");
         //serverPeer->CloseConnection({.rakNetGuid = {.g = identifier.id}, .systemAddress = sa}, true, 0, 0);
         //statics::game->getServerNetworkHandler()->networkHandler->closeConnection(identifier, reason); //why that works and not works in player
         return false;

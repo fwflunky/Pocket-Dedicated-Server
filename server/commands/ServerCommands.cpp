@@ -15,9 +15,4 @@ void ServerCommands::initHooks(void *handle) {
 
 void ServerCommands::setupStandardServer(const std::string &a, const std::string &b) {
    ServerCommands_setupStandardServer(this, a, b);
-
-    MinecraftGame::MinecraftGame_getMinecraft(statics::game)->cmds->registerSingleStepCommand("anus", 1, "byName", (CommandType) 3, [](CommandOrigin const&, CommandPropertyBag const&, CommandPropertyBag&) -> MCRESULT {
-        std::cout << "registerSingleStepCommand cb\n";
-        return MCRESULT::NotEnoughPermissions;
-    });
 }

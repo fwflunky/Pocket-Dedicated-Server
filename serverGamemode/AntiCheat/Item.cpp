@@ -7,6 +7,7 @@
 #include "../../server/player/inventory/ChestContainerManagerModel.h"
 
 bool AntiCheat::Item::onContainerSetSlotPacket(ServerPlayer *player, ContainerSetSlotPacket &pk) {
+    return true;
     auto setItem = pk.item;
     if(setItem.count == 0){
         return true;

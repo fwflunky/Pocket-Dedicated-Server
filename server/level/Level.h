@@ -24,6 +24,7 @@ public:
     static inline void (*Level_tick)(Level*) = nullptr;
     static inline void (*Level_suspendPlayer)(Level*, Player&) = nullptr;
     static inline void (*Level_resumePlayer)(Level*, Player&) = nullptr;
+    static inline void (*Level_createDimension)(Level*, int) = nullptr;
     //static inline int (*Level_addTerrainParticle)(Level*, int, Vec3 const&, Vec3 const&, int) = nullptr;
 
     char filler[111];
@@ -41,6 +42,7 @@ public:
     Dimension* getDimension(int id);
     void suspendPlayer(Player& p);
     void resumePlayer(Player& p);
+    void createDimension(int id);
 };
 
 

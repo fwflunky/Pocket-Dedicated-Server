@@ -2,6 +2,7 @@
 // Created by user on 10.02.23.
 //
 
+#include <thread>
 #include "Tpa.h"
 #include "../customCommands/CustomCommands.h"
 #include "../server/level/Level.h"
@@ -104,6 +105,11 @@ void Tpa::init() {
             return true;
         }
         issues.erase(issues.begin() + index);
+        if(player->getDimension()->dimensionId != issuer->getDimension()->dimensionId){
+            player->sendMessage("Невозможно принять запрос. Игрок находится в другом мире.");
+            issuer->sendMessage("Игрок " + player->nickname + " хотел принять Ваш запрос на телепортацию, но он находится в другом мире.");
+            return true;
+        }
 
         issuer->teleportTo({player->x, player->y, player->z}, 0, 0);
         MovePlayerPacket mpk;

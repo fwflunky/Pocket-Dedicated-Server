@@ -165,3 +165,17 @@ void registerCrashHandler() {
     sigemptyset(&act.sa_mask);
     sigaction(SIGFPE, &act2, 0);
 }
+
+void workerPoolDestroy(void* th) {
+
+}
+
+void workaroundShutdownCrash(void* handle) {
+    // this is an ugly hack to workaround the close app crashes MCPE causes
+    unsigned int patchOff = (unsigned int) hybris_dlsym(handle, "_ZN9TaskGroupD2Ev");
+    patchCallInstruction((void*) patchOff, (void*) &workerPoolDestroy, true);
+    patchOff = (unsigned int) hybris_dlsym(handle, "_ZN10WorkerPoolD2Ev");
+    patchCallInstruction((void*) patchOff, (void*) &workerPoolDestroy, true);
+    patchOff = (unsigned int) hybris_dlsym(handle, "_ZN9SchedulerD2Ev");
+    patchCallInstruction((void*) patchOff, (void*) &workerPoolDestroy, true);
+}

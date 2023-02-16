@@ -5,6 +5,8 @@
 #include "Bans.h"
 #include "../customCommands/CustomCommands.h"
 #include "../server/level/Level.h"
+#include "../../server/statics.h"
+
 void Bans::init() {
     leveldb::Options options;
     options.create_if_missing = true;
@@ -79,7 +81,7 @@ void Bans::continueBanIp(ServerPlayer *adminPlayer, const std::string &targetNic
     }
 
     banIp(receiver->getFuckingIpPortWithAccessToFuckingRakNetBruh().first, reason);
-    receiver->disconnect("", true); //не показывать причину
+    statics::minecraft->disconnectClient(receiver->identifier, "banned"); //не показывать причину
    // receiver->close();
     adminPlayer->sendMessage("Указанный игрок успешно заблокирован.");
 }

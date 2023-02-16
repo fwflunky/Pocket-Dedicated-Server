@@ -10,7 +10,7 @@
 class BlockPos;
 class BlockSource;
 class Entity;
-#include "../entity/BlockEntity.h"
+#include "../entity/blockEntity/BlockEntity.h"
 #include <memory>
 
 class BlockSourceListener {

@@ -18,7 +18,7 @@
 void SpawnColors::initThreads() {
     std::thread([]() {
         sleep(5);
-        while (true) {
+        /*while (true) {
             //  sleep(1);
             float x = spawnPos.x + 0.5;
             float y = spawnPos.y;
@@ -27,7 +27,7 @@ void SpawnColors::initThreads() {
                 statics::serverNetworkHandler->mainLevel->addParticleCustom(31, 0, {x, y, z}); //change with dimanesion sendBroadcast leveleventpacket
             });
 
-        }
+        }*/
     }).detach();
     CustomCommands::registerCommand("spawn", [&](ServerPlayer *player, nlohmann::json &input) -> bool {
         toSpawn(player);
@@ -36,6 +36,18 @@ void SpawnColors::initThreads() {
 
     CustomCommands::registerCommand("rtp", [&](ServerPlayer *player, nlohmann::json &input) -> bool {
         tryRTP(player);
+        return true;
+    });
+
+    CustomCommands::registerCommand("gm", [&](ServerPlayer *player, nlohmann::json &input) -> bool {
+        try {
+            int type = (input["type"].get<std::string >() == "c") ? 1 : 0;
+            player->setPlayerGameType(type);
+            player->sendMessage("Игровой режим изменен");
+        } catch(...){
+            player->sendMessageTranslated("§c%commands.generic.exception", {});
+            return true;
+        }
         return true;
     });
 }
@@ -174,7 +186,7 @@ bool SpawnColors::tryRTP(ServerPlayer *p) {
 
         std::scoped_lock<std::mutex> lock(mux);
         statics::runOnNextTick([nick, mpk, spos, p]() {
-            if (!p)
+            if (!p || p->getDimension()->dimensionId != 0)
                 return;
             p->teleportTo(spos, 0, 0);
             statics::serverNetworkHandler->networkHandler->send(p->identifier, mpk);
@@ -249,7 +261,7 @@ bool SpawnColors::toSpawn(ServerPlayer *p) {
 
         std::scoped_lock<std::mutex> lock(mux);
         statics::runOnNextTick([mpk, spos, p]() {
-            if (!p)
+            if (!p || p->getDimension()->dimensionId != 0)
                 return;
             p->teleportTo(spos, 0, 0);
             statics::serverNetworkHandler->networkHandler->send(p->identifier, mpk);

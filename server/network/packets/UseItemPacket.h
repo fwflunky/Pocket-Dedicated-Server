@@ -7,9 +7,14 @@
 
 #include "Packet.h"
 #include "../../level/BlockPos.h"
+#include "../../item/ItemInstance.h"
 
 class UseItemPacket : public Packet {
 public:
+    ~UseItemPacket() override = default;
+    void write(void* bs) override;
+    unsigned char getId() override;
+
     int x,y,z; //23
     char filler1[28];
     ItemInstance item;

@@ -11,3 +11,4 @@ void hookAndroidLog();
 void patchCallInstruction(void* patchOff, void* func, bool jump);
 void registerCrashHandler();
 void handleSignal(int s, void* ss);
+void workaroundShutdownCrash(void* handle);
