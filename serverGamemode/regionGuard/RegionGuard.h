@@ -40,6 +40,9 @@ public:
     static void handleStage(ServerPlayer* player, tempCreation& stage);
     static bool handleUseItem(ServerPlayer* player, UseItemPacket& pk);
     static bool handleRemoveBlock(ServerPlayer* player, RemoveBlockPacket& pk);
+    static bool handleArrowPickup(ServerPlayer* player, Entity* arrow);
+    static bool handleExplode(Entity* creature);
+    static bool handlePlayerHurted(ServerPlayer* player, const EntityDamageSource &damageSource);
     static void startThreadedDraw(ServerPlayer* player, tempCreation& stage);
 };
 

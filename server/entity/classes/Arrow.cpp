@@ -15,19 +15,6 @@ void Arrow::initHooks(void *handle) {
 }
 
 void Arrow::playerTouch(Player &p) {
-    auto reg = RegionGuard::getRegionWhereVec(this->getDimension()->dimensionId, {x, y, z});
-    if (reg && (!reg->pvEAllowed || !reg->pvPAllowed || !reg->monstersAllowed)) {
-        p.sendPopup("§bПоднимать стрелы в регионе §fзапрещено");
-        for (int i = 0; i <= 5; i++) {
-            Vec3 np = {x, y + 1, z};
-            np.x -= (i * 0.07);
-            np.y += (i * 0.07);
-            np.z -= (i * 0.07);
-            this->getLevel()->addParticleCustom(17, 0, np);
-        }
-        this->remove();
-        return;
-    }
-
-    Arrow_playerTouch(this, p);
+    if(RegionGuard::handleArrowPickup((ServerPlayer*) &p, this))
+        Arrow_playerTouch(this, p);
 }

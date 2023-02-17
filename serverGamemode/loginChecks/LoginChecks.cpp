@@ -31,14 +31,14 @@ bool LoginChecks::checkOnSpawn(Player& p) { //todo block all packets if not spaw
         return false;
     }
 
-    if (lowerNick.contains("§") || lowerNick.length() > 16 || lowerNick.length() < 3) {
+    if (lowerNick.contains("§") || lowerNick.contains("dinnerbone") || lowerNick.contains("grumm") || lowerNick.length() > 16 || lowerNick.length() < 3) {
         p.disconnect("§bНекорректный §fникнейм");
         return false;
     }
 
     if (!Whitelist::byNickIsAllowed(p.nickname)) {
-        //statics::minecraft->disconnectClient(p.identifier, "§bВход без проходки §fзапрещен\n§bКупить проходку можно в §fгруппе ВКонтакте\n§fvk.com/§batmospherepe");
-        //return false;
+        statics::minecraft->disconnectClient(p.identifier, "§bВход без проходки §fзапрещен\n§bКупить проходку можно в §fгруппе ВКонтакте\n§fvk.com/§batmospherepe");
+        return false;
     }
    // Json::Value val("ss");
    // auto ss = p.certificate->getExtraData("idendtity", val);

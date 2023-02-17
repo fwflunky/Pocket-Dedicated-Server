@@ -44,6 +44,7 @@
 #include "../server/entity/SynchedEntityData.h"
 #include "../server/entity/monster/Monster.h"
 #include "../server/entity/classes/Arrow.h"
+#include "../server/entity/classes/Wolf.h"
 #include "../server/entity/teleportComponent/TeleportComponent.h"
 #include "../server/entity/mob/Mob.h"
 #include "../server/entity/mob/MobEffectInstance.h"
@@ -55,7 +56,7 @@
 #include "../server/commands/ServerCommands.h"
 #include "../server/commands/MinecraftCommands.h"
 #include "../server/commands/PlayerCommandOrigin.h"
-#include "../server/level/explodeComponent/ExplodeComponent.h"
+#include "../server/components/explodeComponent/ExplodeComponent.h"
 #include "../serverGamemode/regionGuard/RegionGuard.h"
 #include "../serverGamemode/spawnColors/SpawnColors.h"
 #include "../serverGamemode/tpa/Tpa.h"
@@ -65,6 +66,7 @@
 #include "egl_symbols.h"
 #include "gles_symbols.h"
 #include "fmod_symbols.h"
+#include "../server/components/angryComponent/AngryComponent.h"
 
 #include <sys/mman.h>
 #include <EGL/egl.h>
@@ -134,9 +136,11 @@ int main(int argc, char *argv[]) {
     ItemInstance::initHooks(handle);
     FlintAndSteelItem::initHooks(handle);
     BlockSource::initHooks(handle);
+    AngryComponent::initHooks(handle);
     RakNetInstance::initHooks(handle);
     Bans::init();
     RakPeer::initHooks(handle);
+    Wolf::initHooks(handle);
     Block::initHooks(handle);
     Item::initHooks(handle);
     MinecraftPackets::initHooks(handle);

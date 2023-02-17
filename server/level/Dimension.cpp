@@ -22,3 +22,11 @@ ChunkSource *Dimension::getChunkSource() {
 void Dimension::sendPacketForPosition(BlockPos const&pos, Packet const&p, Player *pp) {
     Dimension_sendPacketForPosition(this, pos, p, pp);
 }
+
+bool Dimension::operator==(Dimension * dimension) const {
+    return this->dimensionId == dimension->dimensionId;
+}
+
+bool Dimension::operator!=(Dimension * dimension) const {
+    return this->dimensionId != dimension->dimensionId;
+}

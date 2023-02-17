@@ -12,7 +12,7 @@
 
 class Region {
 public:
-    std::string ownerName;
+    std::string regionOwnerName;
     std::string regionName;
     int dimensionId;
     AABB box;
@@ -22,6 +22,7 @@ public:
     bool explodesAllowed = true;
     bool pvPAllowed = true;
     bool pvEAllowed = true;
+    bool arrowPickupAllowed = true;
     bool enderChestAccess = false;
     bool chestAccess = false;
     bool furnaceAccess = false;
@@ -31,6 +32,8 @@ public:
     Region(const std::string& owner, const std::string& region, const AABB& size, int dimId);
     bool addMember(const std::string& name);
     bool isMember(const std::string& name) const;
+    bool isOwner(const std::string& name) const;
+    void delMember(const std::string& name);
 };
 
 

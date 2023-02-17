@@ -33,5 +33,8 @@ public:
     void sendPacketForEntity(Entity&e , Packet&p, Player* pp);
     void sendPacketForPosition(BlockPos const &pos , Packet const&p, Player* pp);
     ChunkSource* getChunkSource();
+
+    bool operator ==(Dimension* dimension) const;
+    bool operator !=(Dimension* dimension) const;
 };
 #endif //MCPELAUNCHER_DIMENSION_H

@@ -93,44 +93,9 @@ void Player::sendPopup(const std::string &msg) const {
 bool Player::_hurt(const EntityDamageSource &s, int i, bool b, bool bb) {
     //auto ss = s.damager; //todo EntityDamageSource full
     //std::cout << s.entityDamageCause << "\n";
-        if (s.entityDamageCause == 2 || s.entityDamageCause == 3) { //todo NORMAL check for monster (typeid, etc)
-            auto reg = RegionGuard::getRegionWhereVec(this->getDimension()->dimensionId, {s.damager->x, s.damager->y, s.damager->z});
-            if (reg) {
-                if (!reg->pvEAllowed && s.damager->getNameTag()->empty()) {
-                    std::thread([s, lvl = this->getLevel()]() {
-                        //std::cout << lvl << "\n";
-                        for (int i = 0; i <= 5; i++) {
-                            Vec3 np = {s.damager->x, s.damager->y + 1, s.damager->z};
-                            np.x -= (i * 0.07);
-                            np.y += (i * 0.07);
-                            np.z -= (i * 0.07);
-                            statics::runOnNextTick([lvl, np]() {
-                                lvl->addParticleCustom(17, 0, np);
-                            });
-                        }
-                        if (s.damager->getNameTag()->empty())
-                            s.damager->remove();
-                    }).detach();
-                    return false;
-                } else if (!reg->pvPAllowed && !s.damager->getNameTag()->empty()) {
-                    std::thread([s, lvl = this->getLevel()]() {
-                        //std::cout << lvl << "\n";
-                        for (int i = 0; i <= 5; i++) {
-                            Vec3 np = {s.damager->x, s.damager->y + 1, s.damager->z};
-                            np.x -= (i * 0.07);
-                            np.y += (i * 0.07);
-                            np.z -= (i * 0.07);
-                            statics::runOnNextTick([lvl, np]() {
-                                lvl->addParticleCustom(17, 0, np);
-                            });
-                        }
-                        if (s.damager->getNameTag()->empty())
-                            s.damager->remove();
-                    }).detach();
-                    return false;
-                }
-            }
-    }
+    if(!RegionGuard::handlePlayerHurted((ServerPlayer*) this, s))
+        return false;
+
     return Player__hurt(this, s, i, b, bb);
 }
 

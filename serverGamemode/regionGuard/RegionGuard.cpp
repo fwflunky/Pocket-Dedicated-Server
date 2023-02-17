@@ -12,6 +12,7 @@
 #include "../customCommands/CustomCommands.h"
 #include "../../server/network/packets/UpdateBlockPacket.h"
 #include "../../server/statics.h"
+#include "../../server/level/Level.h"
 #include "../../server/level/BlockSource.h"
 #define spath std::string(CWDD "serverGamemode/storage/regionGuard/")
 Region *RegionGuard::getRegion(const std::string &nick) {
@@ -82,6 +83,7 @@ void RegionGuard::loadAllUsers() {
             std::string membersString;
             std::string monstersAllowed;
             std::string explodesAllowed;
+            std::string arrowPickupAllowed;
             std::string pvPAllowed;
             std::string pvEAllowed;
 
@@ -99,6 +101,7 @@ void RegionGuard::loadAllUsers() {
             db->Get(leveldb::ReadOptions(), "explodesAllowed", &explodesAllowed);
             db->Get(leveldb::ReadOptions(), "pvPAllowed", &pvPAllowed);
             db->Get(leveldb::ReadOptions(), "pvEAllowed", &pvEAllowed);
+            db->Get(leveldb::ReadOptions(), "arrowPickupAllowed", &arrowPickupAllowed);
 
             db->Get(leveldb::ReadOptions(), "enderChestAccess", &enderChestAccess);
             db->Get(leveldb::ReadOptions(), "chestAccess", &chestAccess);
@@ -118,6 +121,7 @@ void RegionGuard::loadAllUsers() {
                 rg->pvEAllowed = pvEAllowed == "1";
                 rg->enderChestAccess = enderChestAccess == "1";
                 rg->chestAccess = chestAccess == "1";
+                rg->arrowPickupAllowed = arrowPickupAllowed == "1";
                 rg->furnaceAccess = furnaceAccess == "1";
                 rg->breweryAccess = breweryAccess == "1";
                 rg->boatPlaceOnWaterAllowed = boatPlaceOnWaterAllowed == "1";
@@ -141,7 +145,7 @@ void RegionGuard::saveAllUsers() {
     for(const auto& reg : playerRegions) {
         leveldb::Status status = leveldb::DB::Open(options, spath +reg.second->regionName, &db);
         if(status.ok()){
-            db->Put(leveldb::WriteOptions(), "ownerName", reg.second->ownerName);
+            db->Put(leveldb::WriteOptions(), "ownerName", reg.second->regionOwnerName);
             db->Put(leveldb::WriteOptions(), "dimensionId", std::to_string(reg.second->dimensionId));
             db->Put(leveldb::WriteOptions(), "boxString", reg.second->box.toString());
             std::string membersString;
@@ -151,6 +155,7 @@ void RegionGuard::saveAllUsers() {
             db->Put(leveldb::WriteOptions(), "membersString", membersString);
             db->Put(leveldb::WriteOptions(), "monstersAllowed", reg.second->monstersAllowed ? "1" : "0");
             db->Put(leveldb::WriteOptions(), "explodesAllowed", reg.second->explodesAllowed ? "1" : "0");
+            db->Put(leveldb::WriteOptions(), "arrowPickupAllowed", reg.second->arrowPickupAllowed ? "1" : "0");
             db->Put(leveldb::WriteOptions(), "pvPAllowed", reg.second->pvPAllowed ? "1" : "0");
             db->Put(leveldb::WriteOptions(), "pvEAllowed", reg.second->pvEAllowed ? "1" : "0");
             db->Put(leveldb::WriteOptions(), "enderChestAccess", reg.second->enderChestAccess ? "1" : "0");
@@ -167,7 +172,7 @@ void RegionGuard::saveAllUsers() {
 void RegionGuard::scheduleAutoSave() {
     std::thread([](){
         while(true){
-            sleep(1);
+            sleep(60 * 10);
             RegionGuard::saveAllUsers();
         }
     }).detach();
@@ -206,6 +211,7 @@ void RegionGuard::initCommands() {
                 reg->enderChestAccess = value;
                 reg->chestAccess = value;
                 reg->furnaceAccess = value;
+                reg->arrowPickupAllowed = value;
                 reg->breweryAccess = value;
                 reg->boatPlaceOnWaterAllowed = value;
                 player->sendMessage("Все флаги установлены на " + (value ? std::string("разрешено") : "запрещено") + ".");
@@ -227,14 +233,62 @@ void RegionGuard::initCommands() {
             } else if(flag == "furnace") {
                 reg->furnaceAccess = value;
                 player->sendMessage("furnaceAccess установлен на " + (value ? std::string("разрешено") : "запрещено") + ".");
-              } else if(flag == "boatwater") {
+            } else if(flag == "boatwater") {
                 reg->boatPlaceOnWaterAllowed = value;
                 player->sendMessage("boatPlaceOnWaterAllowed установлен на " + (value ? std::string("разрешено") : "запрещено") + ".");
-             } else if(flag == "brewery") {
+            } else if(flag == "brewery") {
                 reg->breweryAccess = value;
                 player->sendMessage("breweryAccess установлен на " + (value ? std::string("разрешено") : "запрещено") + ".");
+            } else if(flag == "arrow") {
+                reg->arrowPickupAllowed = value;
+                player->sendMessage("arrowPickupAllowed установлен на " + (value ? std::string("разрешено") : "запрещено") + ".");
             } else {
                 player->sendMessage("§cUnimplemented flag \"" + flag+"\"");
+            }
+
+        } catch(...){
+            player->sendMessageTranslated("§c%commands.generic.exception", {});
+            return true;
+        }
+        return true;
+    });
+
+    CustomCommands::registerCommand("rg member", [&](ServerPlayer* player, nlohmann::json& input) -> bool {
+        auto reg = RegionGuard::getRegion(player->nickname);
+        if (!reg) {
+            player->sendMessage("У Вас нет региона.");
+            return true;
+        }
+
+        try {
+            auto action = input["action"].get<std::string >();
+            if(!input.contains("value")){
+                player->sendMessage("Вы не указали игрока.");
+                return false;
+            }
+            if (input["player"]["selector"].get<std::string>() != "nearestPlayer") {
+                player->sendMessage("Укажите конкретный ник игрока. Использовать обобщения может только оператор.");
+                return false;
+            }
+
+            auto targetNick = input["player"]["rules"][0]["value"].get<std::string>();
+
+            if(action == "del"){
+                if(!reg->isMember(targetNick)){
+                    player->sendMessage("Данный игрок не является участником региона");
+                    return false;
+                }
+                reg->delMember(targetNick);
+                player->sendMessage("Игрок " + targetNick + " был удален из региона.");
+                return true;
+            } else if(action == "add"){
+                if(reg->isMember(targetNick)){
+                    player->sendMessage("Данный игрок уже является участником региона");
+                    return false;
+                }
+                reg->addMember(targetNick);
+                player->sendMessage("Игрок " + targetNick + " был добавлен в регион.");
+                return true;
             }
 
         } catch(...){
@@ -354,7 +408,7 @@ void RegionGuard::startThreadedDraw(ServerPlayer *player, RegionGuard::tempCreat
 bool RegionGuard::handleUseItem(ServerPlayer *player, UseItemPacket &pk) {
     auto reg = RegionGuard::getRegionWhereVec(player->getDimension()->dimensionId, {(float) pk.x, (float) pk.y, (float) pk.z});
     //std::cout << (reg->ownerName != p->nickname )<< "\n";
-    if (reg && ((reg->ownerName != player->nickname) && !reg->isMember(player->nickname))) {
+    if (reg && (!reg->isOwner(player->nickname) && !reg->isMember(player->nickname))) {
         auto bs = BlockSource(*player->getLevel(), *player->getDimension(), *player->getDimension()->getChunkSource(), true, false);
         auto tapBlock = bs.getBlock({pk.x, pk.y, pk.z});
         if((
@@ -365,7 +419,7 @@ bool RegionGuard::handleUseItem(ServerPlayer *player, UseItemPacket &pk) {
             return true;
 
 
-        player->sendPopup("§bДанная местность §fзапривачена §bигроком §f" + reg->ownerName);
+        player->sendPopup("§bДанная местность §fзапривачена §bигроком §f" + reg->regionOwnerName);
 
         player->sendInventory();
 
@@ -392,8 +446,8 @@ bool RegionGuard::handleUseItem(ServerPlayer *player, UseItemPacket &pk) {
 
 bool RegionGuard::handleRemoveBlock(ServerPlayer *player, RemoveBlockPacket &pk) {
     auto reg = RegionGuard::getRegionWhereVec(player->getDimension()->dimensionId, {(float) pk.x, (float) pk.y, (float) pk.z});
-    if (reg && ((reg->ownerName != player->nickname) && !reg->isMember(player->nickname))) {
-        player->sendPopup("§bДанная местность §fзапривачена §bигроком §f" + reg->ownerName);
+    if (reg && (!reg->isOwner(player->nickname) && !reg->isMember(player->nickname))) {
+        player->sendPopup("§bДанная местность §fзапривачена §bигроком §f" + reg->regionOwnerName);
         if (player->getHealth() > 15) {
             player->burn(1, true);
             player->sendMessage("<§l§bAtmosphere§f'PE§r> §bПерестань трогать §fчужую местность");
@@ -419,6 +473,74 @@ bool RegionGuard::handleRemoveBlock(ServerPlayer *player, RemoveBlockPacket &pk)
             }
         }
         return false;
+    }
+    return true;
+}
+
+bool RegionGuard::handleArrowPickup(ServerPlayer *player, Entity* arrow) {
+    auto reg = RegionGuard::getRegionWhereVec(player->getDimension()->dimensionId, {(float) arrow->x, (float) arrow->y, (float) arrow->z});
+    if (reg && (!reg->isOwner(player->nickname) && !reg->isMember(player->nickname) && !reg->arrowPickupAllowed)) {
+        player->sendPopup("§bПоднимать стрелы в регионе §fзапрещено");
+        for (int i = 0; i <= 5; i++) {
+            Vec3 np = {(float) arrow->x, (float) arrow->y, (float) arrow->z};
+            np.x -= (i * 0.07);
+            np.y += (i * 0.07);
+            np.z -= (i * 0.07);
+            player->getLevel()->addParticleCustom(17, 0, np);
+        }
+        arrow->remove();
+        return false;
+    }
+    return true;
+}
+
+bool RegionGuard::handleExplode(Entity *creature) {
+    auto reg = RegionGuard::getRegionWhereVec(creature->getDimension()->dimensionId, {(float) creature->x, (float) creature->y, (float) creature->z});
+    if (reg && !reg->explodesAllowed) {
+        for (int i = 0; i <= 5; i++) {
+            Vec3 np = {(float) creature->x, (float) creature->y, (float) creature->z};
+            np.x -= (i * 0.07);
+            np.y += (i * 0.07);
+            np.z -= (i * 0.07);
+            creature->getLevel()->addParticleCustom(17, 0, np);
+        }
+        if(creature->maybeEntityType == 2) { //primed tnt?
+            creature->drop(ItemInstance(46,1,0), false);
+        }
+
+        creature->remove();
+        return false;
+    }
+    return true;
+}
+
+bool RegionGuard::handlePlayerHurted(ServerPlayer *player, const EntityDamageSource &damageSource) {
+    if (damageSource.entityDamageCause == 2 || damageSource.entityDamageCause == 3) {
+        auto reg = RegionGuard::getRegionWhereVec(player->getDimension()->dimensionId, {damageSource.damager->x, damageSource.damager->y, damageSource.damager->z});
+        if (reg) {
+            auto damagerIsPlayer = damageSource.damager->maybeEntityType == 30;
+            auto damagerIsWolf = damageSource.damager->maybeEntityType == 11;
+
+            if (!reg->pvEAllowed && !damagerIsPlayer) {
+                for (int i = 0; i <= 5; i++) {
+                    Vec3 np = {damageSource.damager->x, damageSource.damager->y, damageSource.damager->z};
+                    np.x -= (i * 0.07);
+                    np.y += (i * 0.07);
+                    np.z -= (i * 0.07);
+                    player->getLevel()->addParticleCustom(17, 0, np);
+                }
+                if (damagerIsWolf && damageSource.damager->isTame()) {
+                    player->sendMessage("Вас пытается атаковать прирученный волк, отойдите от него");
+                    damageSource.damager->setTarget(nullptr);
+                } else {
+                    damageSource.damager->remove();
+                }
+                return false;
+            } else if (!reg->pvPAllowed && damagerIsPlayer) {
+                ((ServerPlayer*) damageSource.damager)->sendPopup("§bPVP в регионе §fзапрещено");
+                return false;
+            }
+        }
     }
     return true;
 }

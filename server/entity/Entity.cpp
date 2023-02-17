@@ -4,7 +4,8 @@
 
 #include "Entity.h"
 #include "../../hybris/include/hybris/dlfcn.h"
-
+#include "../../serverGamemode/petHelper/PetHelper.h"
+#include "../../src/hook.h"
 std::string *Entity::getNameTag() {
     return Entity_getNameTag(this);
 }
@@ -21,7 +22,8 @@ void Entity::initHooks(void *handle) {
     Entity_getLevel = (Level* (*)(Entity*)) hybris_dlsym(handle, "_ZN6Entity8getLevelEv");
     Entity_isRemoved = (bool (*)(Entity*)) hybris_dlsym(handle, "_ZNK6Entity9isRemovedEv");
     Entity_burn = (void (*)(Entity*, int, bool)) hybris_dlsym(handle, "_ZN6Entity4burnEib");
-    Entity_hurt = (bool (*)(Entity*, EntityDamageSource const&, int, bool, bool)) hybris_dlsym(handle, "_ZN6Entity4hurtERK18EntityDamageSourceibb");
+    //Entity_hurt = (bool (*)(Entity*, EntityDamageSource const&, int, bool, bool)) hybris_dlsym(handle, "_ZN6Entity4hurtERK18EntityDamageSourceibb");
+    hookFunction((void *) hybris_dlsym(handle, "_ZN6Entity4hurtERK18EntityDamageSourceibb"), (void *) &Entity::hurt, (void **) &Entity::Entity_hurt);
     Entity_setOnFire = (void (*)(Entity*, int)) hybris_dlsym(handle, "_ZN6Entity9setOnFireEi");
     Entity_moveTo = (void (*)(Entity*, Vec3 const&, Vec2 const&)) hybris_dlsym(handle, "_ZN6Entity6moveToERK4Vec3RK4Vec2");
     Entity_setPos = (void (*)(Entity*, Vec3 const&)) hybris_dlsym(handle, "_ZN6Entity6setPosERK4Vec3");
@@ -31,6 +33,14 @@ void Entity::initHooks(void *handle) {
     Entity_getTeleportComponent = (TeleportComponent* (*)(Entity*)) hybris_dlsym(handle, "_ZNK6Entity20getTeleportComponentEv");
     Entity_remove = (void (*)(Entity*)) hybris_dlsym(handle, "_ZN6Entity6removeEv");
     Entity_setSize = (void (*)(Entity*, float, float)) hybris_dlsym(handle, "_ZN6Entity7setSizeEff");
+    Entity_drop = (void (*)(Entity*, ItemInstance const&, bool)) hybris_dlsym(handle, "_ZN6Entity4dropERK12ItemInstanceb");
+    Entity_setSitting = (void (*)(Entity*, bool)) hybris_dlsym(handle, "_ZN6Entity10setSittingEb");
+    Entity_isSitting = (bool (*)(Entity*)) hybris_dlsym(handle, "_ZNK6Entity9isSittingEv");
+    Entity_getOwner = (Mob* (*)(Entity*)) hybris_dlsym(handle, "_ZNK6Entity8getOwnerEv");
+    Entity_isTame = (bool (*)(Entity*)) hybris_dlsym(handle, "_ZNK6Entity6isTameEv");
+    Entity_distanceToE = (float (*)(Entity*, Entity const&)) hybris_dlsym(handle, "_ZNK6Entity10distanceToERKS_");
+    Entity_distanceToV = (float (*)(Entity*, Vec3 const&)) hybris_dlsym(handle, "_ZNK6Entity10distanceToERK4Vec3");
+    Entity_setTarget = (void (*)(Entity*, Entity*)) hybris_dlsym(handle, "_ZN6Entity9setTargetEPS_");
 }
 
 bool Entity::isRemoved() {
@@ -70,6 +80,7 @@ void Entity::setNameTagVisible(bool v) {
 }
 
 bool Entity::hurt(const EntityDamageSource &s, int i, bool b, bool bb) {
+    //use _hurt for each entity class for check for damage (eg Wolf::_hurt)
     return Entity_hurt(this, s, i, b, bb);
 }
 
@@ -87,6 +98,38 @@ void Entity::remove() {
 
 void Entity::setSize(float xx, float zz) {
     Entity_setSize(this, xx, zz);
+}
+
+void Entity::drop(const ItemInstance &item, bool drag) {
+    Entity_drop(this, item, drag);
+}
+
+void Entity::setSitting(bool sit) {
+    Entity_setSitting(this, sit);
+}
+
+Mob* Entity::getOwner() {
+    return Entity_getOwner(this);
+}
+
+bool Entity::isTame() {
+    return Entity_isTame(this);
+}
+
+float Entity::distanceTo(const Vec3 &vec) {
+    return Entity_distanceToV(this, vec);
+}
+
+float Entity::distanceTo(const Entity &e) {
+    return Entity_distanceToE(this, e);
+}
+
+bool Entity::isSitting() {
+    return Entity_isSitting(this);
+}
+
+void Entity::setTarget(Entity *target) {
+    Entity_setTarget(this, target);
 }
 
 

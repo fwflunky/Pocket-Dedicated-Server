@@ -13,6 +13,7 @@
 #include "SynchedEntityData.h"
 #include "damageSource/EntityDamageSource.h"
 #include "teleportComponent/TeleportComponent.h"
+class AngryComponent;
 
 //class Dimension;
 class Level;
@@ -39,18 +40,29 @@ public:
     static inline Inventory (*Entity_getInventory)(Entity*) = nullptr;
     static inline void (*Entity_remove)(Entity*) = nullptr; //_ZN6Entity6removeEv
     static inline void (*Entity_setSize)(Entity*, float, float) = nullptr; //_ZN6Entity6removeEv
+    static inline void (*Entity_drop)(Entity*, ItemInstance const&, bool) = nullptr; //_ZN6Entity4dropERK12ItemInstanceb
+    static inline void (*Entity_setSitting)(Entity*, bool) = nullptr; //_ZN6Entity10setSittingEb
+    static inline bool (*Entity_isSitting)(Entity*) = nullptr; //_ZNK6Entity9isSittingEv
+    static inline Mob* (*Entity_getOwner)(Entity*) = nullptr; //_ZNK6Entity8getOwnerEv
+    static inline bool (*Entity_isTame)(Entity*) = nullptr; //_ZNK6Entity6isTameEv
+    static inline void (*Entity_setTarget)(Entity*, Entity*) = nullptr; //_ZN6Entity9setTargetEPS_
+    static inline float (*Entity_distanceToE)(Entity*, Entity const&) = nullptr; //_ZNK6Entity10distanceToERKS_
+    static inline float (*Entity_distanceToV)(Entity*, Vec3 const&) = nullptr; //_ZNK6Entity10distanceToERK4Vec3
 
     virtual ~Entity();
-    char filler[59]; //4 - dtor
-    char fillerr[19];
-    float x;
+    char filler[40]; //4 - dtor
+    int ownerUniqueId;
+    char fillerr[34];
+    float x; //84
     float y;
     float z;
-    char fillerss[77];
+    char fillerss[75];
     SynchedEntityData* entityData;
-    char fillersss[64];
-    int maybeEntityType;
-    char fillerd[2964];
+    char fillersss[68];
+    int maybeEntityType; //244
+    char fillerd[2780];
+    AngryComponent* angryComponent;
+    char fillerds[180];
     unsigned long long int runtimeId; //3212
     char filler1[3296 - (92 + 77 + 4 + 3034 + 8) + 1 - 2]; //end of entity - before variables
     //ItemInstance* entityAsItem;
@@ -72,6 +84,14 @@ public:
     TeleportComponent* getTeleportComponent();
     void remove();
     void setSize(float xx, float zz);
+    void drop(ItemInstance const& item, bool drag);
+    void setSitting(bool sit);
+    bool isSitting();
+    Mob* getOwner();
+    bool isTame();
+    float distanceTo(const Entity& e);
+    float distanceTo(const Vec3& vec);
+    void setTarget(Entity* target);
 };
 
 #endif //MCPELAUNCHER_ENTITY_H
