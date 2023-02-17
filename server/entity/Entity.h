@@ -48,8 +48,10 @@ public:
     float z;
     char fillerss[77];
     SynchedEntityData* entityData;
-    char fillersss[3030];
-    unsigned long long int runtimeId;
+    char fillersss[64];
+    int maybeEntityType;
+    char fillerd[2964];
+    unsigned long long int runtimeId; //3212
     char filler1[3296 - (92 + 77 + 4 + 3034 + 8) + 1 - 2]; //end of entity - before variables
     //ItemInstance* entityAsItem;
 

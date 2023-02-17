@@ -83,7 +83,7 @@ bool LoginChecks::checkOnLogin(const NetworkIdentifier &identifier) {
         statics::minecraft->disconnectClient(identifier, "");
         //serverPeer->CloseConnection({.rakNetGuid = {.g = identifier.id}, .systemAddress = sa}, true, 0, 0);
         //statics::game->getServerNetworkHandler()->networkHandler->closeConnection(identifier, reason); //why that works and not works in player
-        return false;
+       return false;
     }
     return true;
 }

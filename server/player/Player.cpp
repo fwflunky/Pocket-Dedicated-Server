@@ -158,9 +158,11 @@ std::shared_ptr<IContainerManager> Player::getContainerManager() {
 }
 
 void Player::take(Entity &e, int i) {
-    std::cout << "take " <<  ((ItemEntity&)e).item.itemOrBlock->fullName << "\n";
-    AntiCheat::Item::addToTakeQueue(nickname, ((ItemEntity&)e).item);
-    Player_take(this, e, i);
+    if(e.maybeEntityType == 4) {
+        std::cout << "take " << ((ItemEntity &) e).item.itemOrBlock->fullName << "\n";
+        AntiCheat::Item::addToTakeQueue(nickname, ((ItemEntity &) e).item); //todo move this to packet from player with check for itementity in world by eid in packet
+        Player_take(this, e, i);
+    }
 }
 
 std::pair<std::string, unsigned short> Player::getFuckingIpPortWithAccessToFuckingRakNetBruh() {
