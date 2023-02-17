@@ -10,8 +10,7 @@ Vanilla (or not so) server software for [Minecraft: Pocket Edition 1.1](https://
 
 ## Known bugs
 
-- Sometimes after calling Player::disconnect the player is not disconnected from the server
-- Randomly segfault at startup
+- Sometimes after dimension change server may segfault
 ## Roadmap
 
 #### Plugins (so to speak cuz they're builtin)
