@@ -13,7 +13,7 @@
 #include "../../server/network/packets/UpdateBlockPacket.h"
 #include "../../server/statics.h"
 #include "../../server/level/BlockSource.h"
-#define spath std::string("/home/user/Видео/mcpelauncher-linux-2ebee1b9a70479685a4c430370c3fdfa47988b54/serverGamemode/storage/regionGuard/")
+#define spath std::string(CWDD "serverGamemode/storage/regionGuard/")
 Region *RegionGuard::getRegion(const std::string &nick) {
     std::scoped_lock<std::mutex> lock(mux);
     if(!playerRegions.contains(nick))

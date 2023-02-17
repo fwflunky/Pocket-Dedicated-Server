@@ -103,13 +103,13 @@ int main(int argc, char *argv[]) {
     // if (glesLib == nullptr || fmodLib == nullptr)
     //    return -1;
     // std::cout << "loading MCPE\n";
-    void *handle = hybris_dlopen("/home/user/Видео/mcpelauncher-linux-2ebee1b9a70479685a4c430370c3fdfa47988b54/libs/libminecraftpe0.so", RTLD_NOW);
+    void *handle = hybris_dlopen(CWDD "libs/libminecraftpe0.so", RTLD_NOW);
     if (handle == nullptr) {
         std::cout << "failed to load MCPE: " << hybris_dlerror() << "\n";
         return -1;
     }
 
-    addHookLibrary(handle, "/home/user/Видео/mcpelauncher-linux-2ebee1b9a70479685a4c430370c3fdfa47988b54/libs/libminecraftpe0.so");
+    addHookLibrary(handle, CWDD "libs/libminecraftpe0.so");
     //unsigned int libBase = ((soinfo *) handle)->base;
     //std::cout << "loaded MCPE (at " << libBase << ")\n";
 

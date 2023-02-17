@@ -5,7 +5,7 @@ enable_language(C)
 
 #SET(CMAKE_CXX_COMPILER "g++-4.9")
 #SET(CMAKE_C_COMPILER "gcc-4.9")
-
+add_compile_definitions(CWDD="/root/mcpelauncher/")
 find_package(Threads REQUIRED)
 find_package(ZLIB REQUIRED)
 find_package(OpenSSL REQUIRED)

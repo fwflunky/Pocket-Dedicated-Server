@@ -11,7 +11,7 @@ void Bans::init() {
     leveldb::Options options;
     options.create_if_missing = true;
 
-    leveldb::Status status = leveldb::DB::Open(options, "/home/user/Видео/mcpelauncher-linux-2ebee1b9a70479685a4c430370c3fdfa47988b54/serverGamemode/storage/bans/database", &db);
+    leveldb::Status status = leveldb::DB::Open(options, CWDD "serverGamemode/storage/bans/database", &db);
 
     CustomCommands::registerCommand("ban", [&](ServerPlayer* player, nlohmann::json& input) -> bool {
         try {
