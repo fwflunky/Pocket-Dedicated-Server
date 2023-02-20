@@ -70,6 +70,7 @@
 #include "../server/components/angryComponent/AngryComponent.h"
 #include "hook.h"
 #include "../serverGamemode/hotBar/HotBar.h"
+#include "libm_symbols.h"
 
 #define CWDD std::filesystem::current_path().string() + "/"
 #include <filesystem>
@@ -99,23 +100,19 @@ int main(int argc, char *argv[]) {
     hybris_hook("eglGetProcAddress", (void *) stubFunc);
     hookAndroidLog();
 
-    if (!loadLibrary("libc.so") || !loadLibrary("libstdc++.so") || !loadLibrary("libm.so") || !loadLibrary("libz.so"))
+    if (!load_empty_library("libc.so") || !load_empty_library("libstdc++.so") || !loadLibraryOS("libm.so", libm_symbols) || !load_empty_library("libz.so") || !load_empty_library("libm.so"))
         return -1;
     // load stub libraries
-    if (!loadLibrary("libandroid.so") || !loadLibrary("liblog.so") || !loadLibrary("libEGL.so") || !loadLibrary("libGLESv2.so") || !loadLibrary("libOpenSLES.so") || !loadLibrary("libfmod.so") || !loadLibrary("libGLESv1_CM.so"))
+    if (!load_empty_library("libandroid.so") || !load_empty_library("liblog.so") || !load_empty_library("libEGL.so") || !load_empty_library("libGLESv2.so") || !load_empty_library("libOpenSLES.so") || !load_empty_library("libfmod.so") || !load_empty_library("libGLESv1_CM.so"))
         return -1;
 
-    // if (glesLib == nullptr || fmodLib == nullptr)
-    //    return -1;
-    // std::cout << "loading MCPE\n";
-    void *handle = hybris_dlopen((CWDD "libs/libminecraftpe0.so").data(), RTLD_NOW);
+    void *handle = hybris_dlopen((CWDD "libs/libminecraftpe.so").data(), RTLD_NOW);
     if (handle == nullptr) {
         std::cout << "failed to load MCPE: " << hybris_dlerror() << "\n";
         return -1;
     }
 
-    std::cout << std::filesystem::current_path().string() << "\n";
-    addHookLibrary(handle, CWDD "libs/libminecraftpe0.so");
+    addHookLibrary(handle, CWDD "libs/libminecraftpe.so");
     //unsigned int libBase = ((soinfo *) handle)->base;
     //std::cout << "loaded MCPE (at " << libBase << ")\n";
 

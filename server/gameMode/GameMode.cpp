@@ -12,7 +12,6 @@
 #include "../network/packets/UpdateBlockPacket.h"
 #include <iostream>
 #include <cstring>
-#include <packets/binary/BinaryStream.h>
 
 void GameMode::initHooks(void *handle) {
     //std::cout << sizeof( NetworkIdentifier) << "\n";
@@ -61,25 +60,6 @@ bool GameMode::useItemOn(Player &p, ItemInstance &i, const BlockPos &pos, char c
     //sleep(9999);
    // p.sendMessage("Флаги: " + std::to_string((int) bs.getBlockAndData(pos).flags));
 
-
-    FullBlock fb {
-            .blockIdAndData = new BlockIDAndData {
-                    .id = 54,
-                    .data = 0
-            }
-    };
-   for(int ii= 1; ii<= 10; ii++) {
-       bs.setBlockAndData({pos.x, pos.y + ii, pos.z}, fb, 0, nullptr);
-        BinaryStream bss;
-                bss.putByte(0x16);
-                bss.putSVarInt(pos.x);
-                bss.putUVarInt(pos.y + ii);
-                bss.putSVarInt(pos.z);
-                bss.putUVarInt((int) fb.blockIdAndData->id);
-                bss.putUVarInt(((0b0001 | 0b0010) << 4) | (int) fb.blockIdAndData->data);
-                statics::serverNetworkHandler->networkHandler->getPeerForUser(p.identifier)->sendPacket(bss.getBuffer(),1,0);
-
-   }
    // p.inventoryProxy->getSlots()[p.inventoryProxy->selectedSlot]->count++;
    /* for(auto ss : p.inventoryProxy->getSlots()) {
         std::cout << ss->itemOrBlock << " is iob\n";

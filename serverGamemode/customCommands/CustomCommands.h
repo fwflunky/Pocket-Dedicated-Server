@@ -8,7 +8,7 @@
 
 #include "../../server/network/packets/CommandStepPacket.h"
 #include "../../server/player/ServerPlayer.h"
-#include <jwtcpp/nlohmann/json.hpp>
+#include <nlohmann/json.hpp>
 
 class CustomCommands {
 public:

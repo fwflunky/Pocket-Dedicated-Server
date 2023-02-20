@@ -4,7 +4,7 @@
 
 #include "Mob.h"
 #include "../../../thirdParty/hybris/include/hybris/dlfcn.h"
-#include "../../src/hook.h"
+#include "../../../src/hook.h"
 void Mob::initHooks(void *handle) {
     Mob_heal = (void (*)(Mob*, int)) hybris_dlsym(handle, "_ZN3Mob4healEi");
     Mob_getHealth = (int (*)(Mob*)) hybris_dlsym(handle, "_ZNK3Mob9getHealthEv");

@@ -6,7 +6,7 @@
 #define PDSERVER_CONFIG_H
 
 
-#include <jwtcpp/nlohmann/json.hpp>
+#include <nlohmann/json.hpp>
 
 class Config {
 public:

@@ -3,21 +3,22 @@ project(pdserver)
 
 enable_language(C)
 
-#SET(CMAKE_CXX_COMPILER"g++-4.9")
-#SET(CMAKE_C_COMPILER"gcc-4.9")
 find_package(Threads REQUIRED)
 find_package(ZLIB REQUIRED)
 find_package(OpenSSL REQUIRED)
 
-include_directories(/home/user/range-v3/include)
-include_directories(/home/user/leveldb/include)
-include_directories(/home/user/CLionProjects/mcpeproxy_v2)
-include_directories(/home/user/Загрузки/spdlog-1.x/include)
-add_compile_definitions(PDSVER="1.7")
-include_directories(/home/user/Видео/mcpelauncher-linux-2ebee1b9a70479685a4c430370c3fdfa47988b54/jsoncpp-1.8.1/include)
+add_compile_definitions(PDSVER="1.7" SPDLOG_COMPILED_LIB)
+include_directories(thirdParty/jsoncpp-1.8.1/include)
+include_directories(thirdParty/range-v3/include)
+include_directories(thirdParty/leveldb/include)
+include_directories(thirdParty/spdlog-1.x/include)
+include_directories(thirdParty/nlohmann/include)
+
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-pmf-conversions -std=c++23 -D_GLIBCXX_USE_CXX11_ABI=0")
 
 set(HYBRIS_SOURCES thirdParty/hybris/src/strlcpy.c thirdParty/hybris/src/cache.c thirdParty/hybris/src/dlfcn.c thirdParty/hybris/src/hooks.c thirdParty/hybris/src/hooks_shm.c thirdParty/hybris/src/logging.c thirdParty/hybris/src/properties.c thirdParty/hybris/src/ctype.c thirdParty/hybris/src/sysconf.c thirdParty/hybris/src/jb/dlfcn.c thirdParty/hybris/src/jb/linker.c thirdParty/hybris/src/jb/linker_environ.c thirdParty/hybris/src/jb/linker_format.c thirdParty/hybris/src/jb/rt.c thirdParty/hybris/src/hooks_pthread.c thirdParty/hybris/src/hooks_dirent.c thirdParty/hybris/src/hooks_io.c thirdParty/hybris/src/hooks_net.c)
+set(LIBJSON_SOURCES thirdParty/jsoncpp-1.8.1/src/lib_json/json_reader.cpp thirdParty/jsoncpp-1.8.1/src/lib_json/json_value.cpp thirdParty/jsoncpp-1.8.1/src/lib_json/json_writer.cpp)
+set(SPDLOG_SOURCES thirdParty/spdlog-1.x/src/async.cpp thirdParty/spdlog-1.x/src/bundled_fmtlib_format.cpp thirdParty/spdlog-1.x/src/cfg.cpp thirdParty/spdlog-1.x/src/color_sinks.cpp thirdParty/spdlog-1.x/src/file_sinks.cpp thirdParty/spdlog-1.x/src/spdlog.cpp thirdParty/spdlog-1.x/src/stdout_sinks.cpp)
 
 set(SOURCE_FILES
 server/entity/classes/Wolf.cpp
@@ -123,7 +124,7 @@ src/common.cpp
 src/hook.cpp
 serverRunner/appPlatform/LinuxAppPlatform.cpp serverGamemode/hotBar/HotBar.cpp serverGamemode/hotBar/HotBar.h)
 
-add_executable(pdserver ${HYBRIS_SOURCES} ${EGLUT_SOURCES} ${SOURCE_FILES})
-target_link_libraries(pdserver ${CMAKE_DL_LIBS} ${CMAKE_THREAD_LIBS_INIT} rt /home/user/Видео/mcpelauncher-linux-2ebee1b9a70479685a4c430370c3fdfa47988b54/jsoncpp-1.8.1/src/lib_json/libjsoncpp.a /home/user/leveldb/build/libleveldb.a libEGL.so libGLESv2.so ${X11_X11_LIB} uuid /usr/lib32/libcrypto.so /usr/lib32/libssl.so)
+add_executable(pdserver ${LIBJSON_SOURCES} ${SPDLOG_SOURCES} ${HYBRIS_SOURCES} ${SOURCE_FILES})
+target_link_libraries(pdserver ${CMAKE_DL_LIBS} ${CMAKE_THREAD_LIBS_INIT} rt ${CMAKE_SOURCE_DIR}/thirdParty/leveldb/build/libleveldb.a uuid /usr/lib32/libcrypto.so /usr/lib32/libssl.so)
 target_compile_definitions(pdserver PRIVATE ANDROID_X86_LINKER _GNU_SOURCE LINKER_TEXT_BASE=0xB0000100 LINKER_AREA_SIZE=0x01000000 LINKER_DEBUG=1)
 set_target_properties(pdserver PROPERTIES COMPILE_FLAGS "-m32" LINK_FLAGS "-m32")

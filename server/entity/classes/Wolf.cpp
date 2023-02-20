@@ -3,9 +3,9 @@
 //
 
 #include "Wolf.h"
-#include "../../thirdParty/hybris/include/hybris/dlfcn.h"
-#include "../../serverGamemode/petHelper/PetHelper.h"
-#include "../../src/hook.h"
+#include "../../../thirdParty/hybris/include/hybris/dlfcn.h"
+#include "../../../serverGamemode/petHelper/PetHelper.h"
+#include "../../../src/hook.h"
 void Wolf::initHooks(void *handle) {
     hookFunction((void *) hybris_dlsym(handle, "_ZN4Wolf5_hurtERK18EntityDamageSourceibb"), (void *) &Wolf::_hurt, (void **) &Wolf::Wolf__hurt);
 }

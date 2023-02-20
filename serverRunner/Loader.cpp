@@ -27,7 +27,7 @@
 #include "uuid/UUID.h"
 #include "ServerInstance.h"
 #include "../src/common.h"
-#include "../../src/hook.h"
+#include "../../../src/hook.h"
 #include "scheduler/Scheduler.h"
 #include "minecraftGame/Minecraft.h"
 #include "../server/statics.h"

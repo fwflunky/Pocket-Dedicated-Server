@@ -2,8 +2,6 @@
 // Created by user on 26.01.23.
 //
 
-#include <packets/binary/BinaryStream.h>
-#include <packets/simplePackets/movePlayer.h>
 #include <arpa/inet.h>
 #include <thread>
 #include "Player.h"
