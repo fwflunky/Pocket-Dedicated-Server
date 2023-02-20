@@ -15,3 +15,7 @@ Level *Minecraft::getLevel() {
 void Minecraft::disconnectClient(const NetworkIdentifier &id, const std::string &res) {
     Minecraft_disconnectClient(this, id, res);
 }
+
+void Minecraft::stopGame() {
+    Minecraft_stopGame(this);
+}

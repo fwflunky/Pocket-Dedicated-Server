@@ -12,10 +12,12 @@ class Minecraft {
 public:
     static inline ServerNetworkHandler* (*Minecraft_getServerNetworkHandler)(Minecraft*) = nullptr;
     static inline Level* (*Minecraft_getLevel)(Minecraft*) = nullptr;
+    static inline void (*Minecraft_stopGame)(Minecraft*) = nullptr;
     static inline void (*Minecraft_disconnectClient)(Minecraft*, NetworkIdentifier const&, std::string const&) = nullptr;
 
     ServerNetworkHandler* getServerNetworkHandler();
     Level* getLevel();
+    void stopGame();
     void disconnectClient(NetworkIdentifier const& id, std::string const& res);
 };
 

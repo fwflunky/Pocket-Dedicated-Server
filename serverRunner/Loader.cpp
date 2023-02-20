@@ -71,6 +71,7 @@ void Loader::initHooks(void *handle) {
 
     Minecraft::Minecraft_getServerNetworkHandler = (ServerNetworkHandler *(*)(Minecraft *)) hybris_dlsym(handle, "_ZN9Minecraft23getServerNetworkHandlerEv");
     Minecraft::Minecraft_getLevel = (Level *(*)(Minecraft *)) hybris_dlsym(handle, "_ZNK9Minecraft8getLevelEv");
+    Minecraft::Minecraft_stopGame = (void (*)(Minecraft *)) hybris_dlsym(handle, "_ZN9Minecraft8stopGameEv");
     Minecraft::Minecraft_disconnectClient = (void (*)(Minecraft *, NetworkIdentifier const &, std::string const &)) hybris_dlsym(handle, "_ZN9Minecraft16disconnectClientERK17NetworkIdentifierRKSs");
 
 
@@ -265,6 +266,7 @@ void Loader::handleCommand(const std::string &cmd) {
 
 void Loader::stop() {
     instance->stop();
+    statics::minecraft->stopGame();
 }
 
 void Loader::ctrlC(int) {
