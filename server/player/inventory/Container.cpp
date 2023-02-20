@@ -3,7 +3,7 @@
 //
 
 #include "Container.h"
-#include "../../../hybris/include/hybris/dlfcn.h"
+#include "../../../thirdParty/hybris/include/hybris/dlfcn.h"
 
 void Container::initHooks(void *handle) {
     Container_setCustomName = (void (*)(Container *, const std::string &)) hybris_dlsym(handle, "_ZN9Container13setCustomNameERKSs");

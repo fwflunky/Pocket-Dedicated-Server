@@ -3,7 +3,7 @@
 //
 
 #include "ServerNetworkHandler.h"
-#include "../../hybris/include/hybris/dlfcn.h"
+#include "../../thirdParty/hybris/include/hybris/dlfcn.h"
 #include "../../src/hook.h"
 #include "../player/ServerPlayer.h"
 #include "../level/Dimension.h"
@@ -29,10 +29,12 @@
 
 void ServerNetworkHandler::initHooks(void *handle) {
     ServerNetworkHandler_disconnectClient = (void (*)(ServerNetworkHandler *, NetworkIdentifier const &, std::string const &, bool)) hybris_dlsym(handle, "_ZN20ServerNetworkHandler16disconnectClientERK17NetworkIdentifierRKSsb");
-    ServerNetworkHandler_onDisconnect = (void (*)(ServerNetworkHandler *, NetworkIdentifier &, std::string const &, bool)) hybris_dlsym(handle, "_ZN20ServerNetworkHandler12onDisconnectERK17NetworkIdentifierRKSsb");
+    ServerNetworkHandler_onDisconnect = (void (*)(ServerNetworkHandler *, NetworkIdentifier const&, std::string const &, bool)) hybris_dlsym(handle, "_ZN20ServerNetworkHandler12onDisconnectERK17NetworkIdentifierRKSsb");
     ServerNetworkHandler__displayGameMessage = (void (*)(ServerNetworkHandler *, const std::string &, const std::string &)) hybris_dlsym(handle, "_ZN20ServerNetworkHandler19_displayGameMessageERKSsS1_");
     ServerNetworkHandler__getActivePlayerCount = (int (*)(ServerNetworkHandler *)) hybris_dlsym(handle, "_ZNK20ServerNetworkHandler21_getActivePlayerCountEv");
     ServerNetworkHandler__getServerPlayer = (ServerPlayer *(*)(ServerNetworkHandler *, NetworkIdentifier const &)) hybris_dlsym(handle, "_ZN20ServerNetworkHandler16_getServerPlayerERK17NetworkIdentifier");
+    hookFunction((void *) hybris_dlsym(handle, "_ZN20ServerNetworkHandler24updateServerAnnouncementEv"), (void *) &ServerNetworkHandler::updateServerAnnouncement, (void **) &ServerNetworkHandler::ServerNetworkHandler_updateServerAnnouncement);
+    hookFunction((void *) hybris_dlsym(handle, "_ZN20ServerNetworkHandler12onDisconnectERK17NetworkIdentifierRKSsb"), (void *) &ServerNetworkHandler::onDisconnect, (void **) &ServerNetworkHandler::ServerNetworkHandler_onDisconnect);
 
     hookFunction((void *) hybris_dlsym(handle, "_ZN20ServerNetworkHandler24onReady_ClientGenerationER6PlayerRK17NetworkIdentifier"), (void *) &ServerNetworkHandler::onReady_ClientGeneration, (void **) &ServerNetworkHandler::ServerNetworkHandler_onReady_ClientGeneration);
     hookFunction((void *) hybris_dlsym(handle, "_ZN20ServerNetworkHandler6handleERK17NetworkIdentifierRK10TextPacket"), (void *) &ServerNetworkHandler::handleTextPacket, (void **) &ServerNetworkHandler::ServerNetworkHandler_handle_TextPacket);
@@ -42,11 +44,11 @@ void ServerNetworkHandler::initHooks(void *handle) {
     hookFunction((void *) hybris_dlsym(handle, "_ZN20ServerNetworkHandler6handleERK17NetworkIdentifierRK17CommandStepPacket"), (void *) &ServerNetworkHandler::handleCommandStepPacket, (void **) &ServerNetworkHandler::ServerNetworkHandler_handle_CommandStepPacket);
     hookFunction((void *) hybris_dlsym(handle, "_ZN20ServerNetworkHandler6handleERK17NetworkIdentifierRK22ContainerSetSlotPacket"), (void *) &ServerNetworkHandler::handleContainerSetSlotPacket, (void **) &ServerNetworkHandler::ServerNetworkHandler_handle_ContainerSetSlotPacket);
     hookFunction((void *) hybris_dlsym(handle, "_ZN20ServerNetworkHandler6handleERK17NetworkIdentifierRK11LoginPacket"), (void *) &ServerNetworkHandler::handleLoginPacket, (void **) &ServerNetworkHandler::ServerNetworkHandler_handle_LoginPacket);
-    hookFunction((void *) hybris_dlsym(handle, "_ZN20ServerNetworkHandler24updateServerAnnouncementEv"), (void *) &ServerNetworkHandler::updateServerAnnouncement, (void **) &ServerNetworkHandler::ServerNetworkHandler_updateServerAnnouncement);
 }
 
 void ServerNetworkHandler::onReady_ClientGeneration(Player &p, NetworkIdentifier &ne) {
     auto name = p.nickname;
+    Player::ipsHolder.insert({p.nickname, p.getFuckingIpPortWithAccessToFuckingRakNetBruh()});
 
     if(LoginChecks::checkOnSpawn(p))
         ServerNetworkHandler_onReady_ClientGeneration(this, p, ne);
@@ -97,7 +99,7 @@ void ServerNetworkHandler::setMaxPlayers(int count) {
 }
 
 void ServerNetworkHandler::updateServerAnnouncement() const {
-    serverLocator->announceServer(serverMOTD, serverCore, 2, currentPlayerCount, maxPlayersCount);
+    serverLocator->announceServer(serverMOTD, serverCore, 0, currentPlayerCount, maxPlayersCount); //0 - game type
 }
 
 void ServerNetworkHandler::handleUseItemPacket(const NetworkIdentifier &ident, UseItemPacket &pk) {
@@ -136,6 +138,13 @@ void ServerNetworkHandler::handleContainerSetSlotPacket(const NetworkIdentifier 
 }
 
 void ServerNetworkHandler::handleLoginPacket(const NetworkIdentifier &ident, LoginPacket &pk) {
-    if(LoginChecks::checkOnLogin(ident))
+    pk.req->verifySelfSigned();
+    if(LoginChecks::checkOnLogin(&pk, ident))
         ServerNetworkHandler_handle_LoginPacket(this, ident, pk);
+}
+
+void ServerNetworkHandler::onDisconnect(const NetworkIdentifier &identifier, const std::string &reason, bool hide) {
+    LoginChecks::checkOnDisconnect(identifier);
+    Player::ipsHolder.erase(_getServerPlayer(identifier)->nickname);
+    ServerNetworkHandler_onDisconnect(this, identifier, reason, hide);
 }

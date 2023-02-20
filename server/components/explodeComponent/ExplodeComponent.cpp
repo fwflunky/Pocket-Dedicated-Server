@@ -3,7 +3,7 @@
 //
 
 #include "ExplodeComponent.h"
-#include "../../../hybris/include/hybris/dlfcn.h"
+#include "../../../thirdParty/hybris/include/hybris/dlfcn.h"
 #include "../../../src/hook.h"
 #include "../../../serverGamemode/regionGuard/RegionGuard.h"
 #include "../../level/Level.h"

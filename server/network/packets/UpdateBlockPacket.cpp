@@ -2,7 +2,7 @@
 // Created by user on 03.02.23.
 //
 #include "UpdateBlockPacket.h"
-#include "../../../hybris/include/hybris/dlfcn.h"
+#include "../../../thirdParty/hybris/include/hybris/dlfcn.h"
 
 void UpdateBlockPacket::initHooks(void *handle) {
     UpdateBlockPacket_write = (void (*)(UpdateBlockPacket *, void*)) hybris_dlsym(handle, "_ZNK17UpdateBlockPacket5writeER12BinaryStream");

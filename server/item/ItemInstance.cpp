@@ -3,7 +3,7 @@
 //
 
 #include "ItemInstance.h"
-#include "../../hybris/include/hybris/dlfcn.h"
+#include "../../thirdParty/hybris/include/hybris/dlfcn.h"
 
 void ItemInstance::initHooks(void *handle) {
     ItemInstance_add = (void (*)(ItemInstance *, int)) hybris_dlsym(handle, "_ZN12ItemInstance3addEi");

@@ -3,7 +3,7 @@
 //
 
 #include "MinecraftObjectLayer.h"
-#include "../hybris/include/hybris/dlfcn.h"
+#include "../thirdParty/hybris/include/hybris/dlfcn.h"
 
 void MinecraftObjectLayer::initHooks(void *handle) {
     MinecraftObjectLayer_getFeetPos = (Vec3 (*)(Entity&)) hybris_dlsym(handle, "_ZNK20MinecraftObjectLayer10getFeetPosERK6Entity");

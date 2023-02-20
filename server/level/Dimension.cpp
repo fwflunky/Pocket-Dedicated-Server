@@ -3,7 +3,7 @@
 //
 
 #include "Dimension.h"
-#include "../../hybris/include/hybris/dlfcn.h"
+#include "../../thirdParty/hybris/include/hybris/dlfcn.h"
 
 void Dimension::initHooks(void *handle) {
     Dimension_sendPacketForEntity = (void (*)(Dimension*, Entity&, Packet&, Player*)) hybris_dlsym(handle, "_ZN9Dimension19sendPacketForEntityERK6EntityRK6PacketPK6Player");

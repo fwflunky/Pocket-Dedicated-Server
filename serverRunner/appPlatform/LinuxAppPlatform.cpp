@@ -9,10 +9,10 @@
 #include <uuid/uuid.h>
 #include <sys/types.h>
 #include <sys/sysinfo.h>
-#include "../../hybris/src/jb/linker.h"
+#include "../../thirdParty/hybris/src/jb/linker.h"
 
 extern "C" {
-#include "../../hybris/include/hybris/dlfcn.h"
+#include "../../thirdParty/hybris/include/hybris/dlfcn.h"
 }
 
 bool enablePocketGuis = false;

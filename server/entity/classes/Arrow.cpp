@@ -5,7 +5,7 @@
 #include <thread>
 #include "Arrow.h"
 #include "../../../src/hook.h"
-#include "../../../hybris/include/hybris/dlfcn.h"
+#include "../../../thirdParty/hybris/include/hybris/dlfcn.h"
 #include "../../../serverGamemode/regionGuard/RegionGuard.h"
 #include "../../statics.h"
 #include "../../level/Level.h"

@@ -3,7 +3,7 @@
 //
 
 #include "ServerPlayer.h"
-#include "../../hybris/include/hybris/dlfcn.h"
+#include "../../thirdParty/hybris/include/hybris/dlfcn.h"
 
 void ServerPlayer::initHooks(void *handle) {
     ServerPlayer_changeDimension = (void (*)(ServerPlayer *, int)) hybris_dlsym(handle, "_ZN12ServerPlayer15changeDimensionE11DimensionId");

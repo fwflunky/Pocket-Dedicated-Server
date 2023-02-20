@@ -14,7 +14,7 @@
 #include "../../server/statics.h"
 #include "../../server/level/Level.h"
 #include "../../server/level/BlockSource.h"
-#define spath std::string(CWDD "serverGamemode/storage/regionGuard/")
+#define spath std::string(std::filesystem::current_path().string() + "/serverGamemode/storage/regionGuard/")
 Region *RegionGuard::getRegion(const std::string &nick) {
     std::scoped_lock<std::mutex> lock(mux);
     if(!playerRegions.contains(nick))
@@ -286,8 +286,10 @@ void RegionGuard::initCommands() {
                     player->sendMessage("Данный игрок уже является участником региона");
                     return false;
                 }
-                reg->addMember(targetNick);
-                player->sendMessage("Игрок " + targetNick + " был добавлен в регион.");
+                if(reg->addMember(targetNick))
+                    player->sendMessage("Игрок " + targetNick + " был добавлен в регион.");
+                else
+                    player->sendMessage("Не удалось добавить игрока. Возможно превышен лимит участников региона.");
                 return true;
             }
 

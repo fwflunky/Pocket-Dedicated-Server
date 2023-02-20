@@ -22,7 +22,6 @@
 #include "../server/gameMode/GameMode.h"
 #include "../server/gameMode/SurvivalMode.h"
 #include "../server/item/ItemInstance.h"
-#include "../server/item/FlintAndSteelItem.h"
 #include "../server/math/vec3/Vec3.h"
 #include "../server/math/vec2/Vec2.h"
 #include "../server/math/aabb/AABB.h"
@@ -32,6 +31,8 @@
 #include "../server/network/networkHandler/Connection.h"
 #include "../server/network/packets/MovePlayerPacket.h"
 #include "../server/network/packets/SetTitlePacket.h"
+#include "../server/network/packets/TransferPacket.h"
+#include "../server/network/connectionRequest/ConnectionRequest.h"
 #include "../server/player/certificate/Certificate.h"
 #include "../server/network/packets/ContainerSetSlotPacket.h"
 #include "../server/network/networkHandler/NetworkHandler.h"
@@ -67,14 +68,16 @@
 #include "gles_symbols.h"
 #include "fmod_symbols.h"
 #include "../server/components/angryComponent/AngryComponent.h"
+#include "hook.h"
+#include "../serverGamemode/hotBar/HotBar.h"
 
-#include <sys/mman.h>
-#include <EGL/egl.h>
+#define CWDD std::filesystem::current_path().string() + "/"
+#include <filesystem>
 
 extern "C" {
-#include "../hybris/include/hybris/dlfcn.h"
-#include "../hybris/include/hybris/hook.h"
-#include "../hybris/src/jb/linker.h"
+#include "../thirdParty/hybris/include/hybris/dlfcn.h"
+#include "../thirdParty/hybris/include/hybris/hook.h"
+#include "../thirdParty/hybris/src/jb/linker.h"
 }
 
 void stubFunc() {
@@ -105,12 +108,13 @@ int main(int argc, char *argv[]) {
     // if (glesLib == nullptr || fmodLib == nullptr)
     //    return -1;
     // std::cout << "loading MCPE\n";
-    void *handle = hybris_dlopen(CWDD "libs/libminecraftpe0.so", RTLD_NOW);
+    void *handle = hybris_dlopen((CWDD "libs/libminecraftpe0.so").data(), RTLD_NOW);
     if (handle == nullptr) {
         std::cout << "failed to load MCPE: " << hybris_dlerror() << "\n";
         return -1;
     }
 
+    std::cout << std::filesystem::current_path().string() << "\n";
     addHookLibrary(handle, CWDD "libs/libminecraftpe0.so");
     //unsigned int libBase = ((soinfo *) handle)->base;
     //std::cout << "loaded MCPE (at " << libBase << ")\n";
@@ -134,7 +138,6 @@ int main(int argc, char *argv[]) {
     RakNetServerLocator::initHooks(handle);
     GameMode::initHooks(handle);
     ItemInstance::initHooks(handle);
-    FlintAndSteelItem::initHooks(handle);
     BlockSource::initHooks(handle);
     AngryComponent::initHooks(handle);
     RakNetInstance::initHooks(handle);
@@ -167,17 +170,20 @@ int main(int argc, char *argv[]) {
     Command::initHooks(handle);
     PlayerCommandOrigin::initHooks(handle);
     ServerCommands::initHooks(handle);
+    ConnectionRequest::initHooks(handle);
+    TransferPacket::initHooks(handle);
     ContainerSetSlotPacket::initHooks(handle);
     Arrow::initHooks(handle);
     MobEffectInstance::initHooks(handle);
 
     RegionGuard::loadAllUsers();
     RegionGuard::scheduleAutoSave();
+    HotBar::scheduleUpdate();
     //SpawnColors::loadBlocks();
     SpawnColors::initThreads();
     Tpa::init();
 
     Loader::load(handle);
-    sleep(3);
+    sleep(2);
     return 0;
 }

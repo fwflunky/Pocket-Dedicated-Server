@@ -4,7 +4,7 @@
 
 #include "GameMode.h"
 #include "../../src/hook.h"
-#include "../../hybris/include/hybris/dlfcn.h"
+#include "../../thirdParty/hybris/include/hybris/dlfcn.h"
 #include "../level/BlockPos.h"
 #include "../../src/common.h"
 #include "../level/BlockSource.h"

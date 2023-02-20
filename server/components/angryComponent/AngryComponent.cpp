@@ -3,7 +3,7 @@
 //
 
 #include "AngryComponent.h"
-#include "../../../hybris/include/hybris/dlfcn.h"
+#include "../../../thirdParty/hybris/include/hybris/dlfcn.h"
 #include "../../statics.h"
 #include <thread>
 #include <iostream>

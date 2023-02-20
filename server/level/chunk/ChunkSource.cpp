@@ -3,7 +3,7 @@
 //
 
 #include "ChunkSource.h"
-#include "../../../hybris/include/hybris/dlfcn.h"
+#include "../../../thirdParty/hybris/include/hybris/dlfcn.h"
 
 void ChunkSource::initHooks(void *handle) {
     ChunkSource_getOrLoadChunk = (LevelChunk* (*)(ChunkSource*, ChunkPos const&, int)) hybris_dlsym(handle, "_ZN11ChunkSource14getOrLoadChunkERK8ChunkPosNS_8LoadModeE");

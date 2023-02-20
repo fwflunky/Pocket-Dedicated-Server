@@ -3,7 +3,7 @@
 //
 
 #include "RakNetInstance.h"
-#include "../../../hybris/include/hybris/dlfcn.h"
+#include "../../../thirdParty/hybris/include/hybris/dlfcn.h"
 
 void RakNetInstance::initHooks(void *handle) {
     RakNetInstance__getPeer = (RakPeer* (*)(RakNetInstance*, NetworkIdentifier const&)) hybris_dlsym(handle, "_ZN14RakNetInstance8_getPeerERK17NetworkIdentifier");

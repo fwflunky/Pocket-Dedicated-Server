@@ -3,7 +3,7 @@
 //
 
 #include "Block.h"
-#include "../../hybris/include/hybris/dlfcn.h"
+#include "../../thirdParty/hybris/include/hybris/dlfcn.h"
 
 void Block::initHooks(void *handle) {
     Block_setDestroyTime = (void (*)(Block *, float)) hybris_dlsym(handle, "_ZN5Block14setDestroyTimeEf");

@@ -2,6 +2,7 @@
 // Created by user on 13.02.23.
 //
 
+#include <filesystem>
 #include "Bans.h"
 #include "../customCommands/CustomCommands.h"
 #include "../../server/level/Level.h"
@@ -11,7 +12,7 @@ void Bans::init() {
     leveldb::Options options;
     options.create_if_missing = true;
 
-    leveldb::Status status = leveldb::DB::Open(options, CWDD "serverGamemode/storage/bans/database", &db);
+    leveldb::Status status = leveldb::DB::Open(options, std::filesystem::current_path().string() +  "/serverGamemode/storage/bans/database", &db);
 
     CustomCommands::registerCommand("ban", [&](ServerPlayer* player, nlohmann::json& input) -> bool {
         try {

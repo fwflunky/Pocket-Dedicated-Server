@@ -3,7 +3,7 @@
 //
 
 #include "FillingContainer.h"
-#include "../../../hybris/include/hybris/dlfcn.h"
+#include "../../../thirdParty/hybris/include/hybris/dlfcn.h"
 
 void FillingContainer::initHooks(void *handle) {
     FillingContainer_removeItem = (void (*)(FillingContainer *, int, int)) hybris_dlsym(handle, "_ZN16FillingContainer10removeItemEii");

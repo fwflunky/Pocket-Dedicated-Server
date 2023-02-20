@@ -7,11 +7,13 @@
 
 
 #include "../../server/player/Player.h"
+#include "../../server/network/packets/LoginPacket.h"
 
 class LoginChecks {
 public:
-    static bool checkOnLogin(const NetworkIdentifier& identifier); //todo
+    static bool checkOnLogin(LoginPacket* login, const NetworkIdentifier& identifier); //todo
     static bool checkOnSpawn(Player& p);
+    static void checkOnDisconnect(const NetworkIdentifier& identifier);
 };
 
 

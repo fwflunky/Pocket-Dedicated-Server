@@ -8,7 +8,7 @@
 
 #include "../raknet/RakNetServerLocator.h"
 
-class __attribute__((packed)) ServerLocator : public RakNetServerLocator {
+class ServerLocator : public RakNetServerLocator {
 
 };
 

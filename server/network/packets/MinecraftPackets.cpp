@@ -3,7 +3,7 @@
 //
 
 #include "MinecraftPackets.h"
-#include "../../../hybris/include/hybris/dlfcn.h"
+#include "../../../thirdParty/hybris/include/hybris/dlfcn.h"
 
 void MinecraftPackets::initHooks(void *handle) {
     MinecraftPackets_createPacket = (void* (*)(MinecraftPackets*, int)) hybris_dlsym(handle, "_ZN16MinecraftPackets12createPacketEi");

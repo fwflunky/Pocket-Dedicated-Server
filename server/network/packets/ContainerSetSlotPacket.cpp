@@ -3,7 +3,7 @@
 //
 
 #include "ContainerSetSlotPacket.h"
-#include "../../../hybris/include/hybris/dlfcn.h"
+#include "../../../thirdParty/hybris/include/hybris/dlfcn.h"
 
 void ContainerSetSlotPacket::initHooks(void *handle) {
     ContainerSetSlotPacket_write = (void (*)(ContainerSetSlotPacket *, void*)) hybris_dlsym(handle, "_ZNK22ContainerSetSlotPacket5writeER12BinaryStream");

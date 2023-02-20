@@ -8,8 +8,8 @@
 #include <map>
 
 extern "C" {
-#include "../hybris/include/hybris/dlfcn.h"
-#include "../hybris/src/jb/linker.h"
+#include "../thirdParty/hybris/include/hybris/dlfcn.h"
+#include "../thirdParty/hybris/src/jb/linker.h"
 }
 
 struct soinfo_hookinfo {
@@ -21,7 +21,7 @@ struct soinfo_hookinfo {
 std::map<soinfo*, soinfo_hookinfo> hookLibraries;
 
 void addHookLibrary(void* ptr, std::string const& fileName) {
-    soinfo* lib = (soinfo*) ptr;
+    auto* lib = (soinfo*) ptr;
 
     if (hookLibraries.count(lib) > 0)
         return;

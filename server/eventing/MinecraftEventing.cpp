@@ -4,7 +4,7 @@
 
 #include "MinecraftEventing.h"
 #include <iostream>
-#include "../../hybris/include/hybris/dlfcn.h"
+#include "../../thirdParty/hybris/include/hybris/dlfcn.h"
 #include "../../src/hook.h"
 #include "../../src/common.h"
 

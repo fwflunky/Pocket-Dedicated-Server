@@ -3,14 +3,13 @@
 //
 
 #include "Level.h"
-#include "../../hybris/include/hybris/dlfcn.h"
+#include "../../thirdParty/hybris/include/hybris/dlfcn.h"
 #include "../../src/hook.h"
 #include "../statics.h"
 
 void Level::initHooks(void *handle) {
     Level_getUsers = (std::vector<Player*>* (*)(Level*)) hybris_dlsym(handle, "_ZN5Level8getUsersEv");
     Level_setTime = (void (*)(Level*, int)) hybris_dlsym(handle, "_ZN5Level7setTimeEi");
-    Level_getPacketSender = (UnknownPacketSender* (*)(Level*)) hybris_dlsym(handle, "_ZNK5Level15getPacketSenderEv");
     Level__syncTime = (void (*)(Level*, int)) hybris_dlsym(handle, "_ZN5Level9_syncTimeEi");
     Level_addParticle = (int (*)(Level*, int, Vec3 const&, Vec3 const&, int)) hybris_dlsym(handle, "_ZN5Level11addParticleE12ParticleTypeRK4Vec3S3_i");
     Level_broadcastLevelEvent = (void (*)(Level*, short, Vec3 const&, int, Player*)) hybris_dlsym(handle, "_ZN5Level19broadcastLevelEventE10LevelEventRK4Vec3iP6Player");
@@ -18,7 +17,7 @@ void Level::initHooks(void *handle) {
     Level_suspendPlayer = (void (*)(Level*, Player&)) hybris_dlsym(handle, "_ZN5Level13suspendPlayerER6Player");
     Level_resumePlayer = (void (*)(Level*, Player&)) hybris_dlsym(handle, "_ZN5Level12resumePlayerER6Player");
     Level_createDimension = (void (*)(Level*, int)) hybris_dlsym(handle, "_ZN5Level15createDimensionE11DimensionId");
-    hookFunction((void *) hybris_dlsym(handle, "_ZN5Level4tickEv"), (void *) &Level::tick, (void **) &Level::Level_tick);
+    Level_saveGameData = (void (*)(Level*)) hybris_dlsym(handle, "_ZN5Level12saveGameDataEv");
 }
 
 std::vector<Player *>* Level::getUsers() {
@@ -31,10 +30,6 @@ void Level::_syncTime(int time) {
 
 void Level::setTime(int time) {
     Level_setTime(this, time);
-}
-
-UnknownPacketSender *Level::getPacketSender() {
-    return Level_getPacketSender(this);
 }
 
 int Level::addParticle(int type, const Vec3 &pos, const Vec3 &size, int some) {
@@ -53,10 +48,6 @@ Dimension *Level::getDimension(int d) {
     return Level_getDimension(this, d);
 }
 
-void Level::tick() {
-    Level_tick(this);
-}
-
 void Level::suspendPlayer(Player &p) {
     Level_suspendPlayer(this, p);
 }
@@ -67,4 +58,8 @@ void Level::resumePlayer(Player &p) {
 
 void Level::createDimension(int id) {
     Level_createDimension(this, id);
+}
+
+void Level::saveGameData() {
+    Level_saveGameData(this);
 }

@@ -7,7 +7,7 @@
 
 #include <string>
 #include <vector>
-#include "../../../hybris/include/hybris/dlfcn.h"
+#include "../../../thirdParty/hybris/include/hybris/dlfcn.h"
 #include "Packet.h"
 #include <iostream>
 class TextPacket : public Packet {

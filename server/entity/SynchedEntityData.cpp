@@ -3,7 +3,7 @@
 //
 
 #include "SynchedEntityData.h"
-#include "../../hybris/include/hybris/dlfcn.h"
+#include "../../thirdParty/hybris/include/hybris/dlfcn.h"
 
 void SynchedEntityData::initHooks(void *handle) {
     SynchedEntityData_getInt = (int (*)(SynchedEntityData*, unsigned short)) hybris_dlsym(handle, "_ZNK17SynchedEntityData6getIntEt");

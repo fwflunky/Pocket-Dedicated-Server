@@ -16,9 +16,13 @@ public:
 
     static inline ServerInstance* instance = nullptr;
     static inline bool isShutdown = false;
+
     static void load(void* handle);
     static void handleCommand(const std::string& cmd);
     static void stop();
+    static void registerCtrlCHandler();
+    static void doOnStop();
+    static void ctrlC(int);
 
     struct basicPatches {
         class HTTPRequest;

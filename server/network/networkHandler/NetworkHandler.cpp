@@ -6,7 +6,7 @@
 #include "NetworkHandler.h"
 #include "Connection.h"
 #include "../../../src/hook.h"
-#include "../../../hybris/include/hybris/dlfcn.h"
+#include "../../../thirdParty/hybris/include/hybris/dlfcn.h"
 
 void NetworkHandler::NetworkHandler::initHooks(void *handle) {
     NetworkHandler_getPeerForUser = (BatchedNetworkPeer *(*)(NetworkHandler *, NetworkIdentifier const &)) hybris_dlsym(handle, "_ZN14NetworkHandler14getPeerForUserERK17NetworkIdentifier");

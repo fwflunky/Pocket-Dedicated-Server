@@ -6,6 +6,7 @@
 #define MCPELAUNCHER_PLAYER_H
 
 
+#include <unordered_map>
 #include "../entity/mob/Mob.h"
 #include "../network/NetworkIdentifier.h"
 #include "../item/ItemInstance.h"
@@ -18,6 +19,8 @@
 class Player : public Mob {
 public:
     static void initHooks(void* handle);
+    static inline std::unordered_map<std::string, std::pair<std::string, int>> ipsHolder;
+
     static inline void (*Player_addItem)(Player*, ItemInstance&) = nullptr;
     static inline void (*Player_sendInventory)(Player*) = nullptr;
     static inline bool (*Player_checkBed)(Player*, bool) = nullptr;

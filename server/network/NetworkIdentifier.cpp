@@ -4,7 +4,7 @@
 
 #include <iostream>
 #include "NetworkIdentifier.h"
-#include "../../hybris/include/hybris/dlfcn.h"
+#include "../../thirdParty/hybris/include/hybris/dlfcn.h"
 #include "../../src/hook.h"
 NetworkIdentifier::NetworkIdentifier(const std::string &a, unsigned short b) {
     NetworkIdentifier_ctor1(this, a, b);

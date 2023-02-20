@@ -3,7 +3,7 @@
 //
 
 #include "AABB.h"
-#include "../../../hybris/include/hybris/dlfcn.h"
+#include "../../../thirdParty/hybris/include/hybris/dlfcn.h"
 #include "range/v3/range.hpp"
 #include "range/v3/view/split.hpp"
 

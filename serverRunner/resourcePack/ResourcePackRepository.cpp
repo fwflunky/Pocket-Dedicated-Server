@@ -13,3 +13,11 @@ int ResourcePackRepository::getPackLoadingReport() {
     //std::cout << this << "\n";
     return ResourcePackRepository_getPackLoadingReport(this);
 }
+
+void ResourcePackRepository::addWorldResourcePacks(const std::string &name) {
+    ResourcePackRepository_addWorldResourcePacks(this, name);
+}
+
+void ResourcePackRepository::refreshPacks() {
+    ResourcePackRepository_refreshPacks(this);
+}

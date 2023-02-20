@@ -3,7 +3,7 @@
 //
 
 #include "Command.h"
-#include "../../hybris/include/hybris/dlfcn.h"
+#include "../../thirdParty/hybris/include/hybris/dlfcn.h"
 
 void Command::initHooks(void *handle) {
     Command_ctor = (void (*)(Command*, std::string const&, int, std::string const&)) hybris_dlsym(handle, "_ZN7CommandC2ERKSs22CommandPermissionLevelS1_");

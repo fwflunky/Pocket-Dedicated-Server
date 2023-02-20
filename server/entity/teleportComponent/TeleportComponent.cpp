@@ -3,7 +3,7 @@
 //
 
 #include "TeleportComponent.h"
-#include "../../../hybris/include/hybris/dlfcn.h"
+#include "../../../thirdParty/hybris/include/hybris/dlfcn.h"
 
 void TeleportComponent::initHooks(void *handle) {
     TeleportComponent_randomTeleport = (bool (*)(TeleportComponent*)) hybris_dlsym(handle, "_ZN17TeleportComponent14randomTeleportEv");

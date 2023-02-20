@@ -13,6 +13,9 @@ Region::Region(const std::string &owner, const std::string& region, const AABB &
 }
 
 bool Region::addMember(const std::string &name) {
+    if(memberNames.size() >= 10)
+        return false;
+
     std::string tname = name;
     std::transform(tname.begin(), tname.end(), tname.begin(),
                    [](unsigned char c) { return std::tolower(c); });

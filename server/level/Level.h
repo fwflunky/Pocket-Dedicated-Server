@@ -8,7 +8,6 @@
 
 #include <vector>
 #include "../player/Player.h"
-#include "UnknownPacketSender.h"
 
 class Level {
 public:
@@ -16,25 +15,22 @@ public:
 
     static inline std::vector<Player*>* (*Level_getUsers)(Level*) = nullptr;
     static inline void(*Level_setTime)(Level*, int) = nullptr;
-    static inline UnknownPacketSender* (*Level_getPacketSender)(Level*) = nullptr;
     static inline void(*Level__syncTime)(Level*, int) = nullptr;
     static inline int (*Level_addParticle)(Level*, int, Vec3 const&, Vec3 const&, int) = nullptr;
     static inline void (*Level_broadcastLevelEvent)(Level*, short, Vec3 const&, int, Player*) = nullptr;
     static inline Dimension* (*Level_getDimension)(Level*, int) = nullptr;
-    static inline void (*Level_tick)(Level*) = nullptr;
     static inline void (*Level_suspendPlayer)(Level*, Player&) = nullptr;
     static inline void (*Level_resumePlayer)(Level*, Player&) = nullptr;
     static inline void (*Level_createDimension)(Level*, int) = nullptr;
+    static inline void (*Level_saveGameData)(Level*) = nullptr;
     //static inline int (*Level_addTerrainParticle)(Level*, int, Vec3 const&, Vec3 const&, int) = nullptr;
 
     char filler[111];
     int someInt1;
     int someInt2;
 
-    void tick();
     std::vector<Player*>* getUsers();
     void setTime(int time);
-    UnknownPacketSender* getPacketSender();
     void _syncTime(int time);
     int addParticle(int type, Vec3 const& pos, Vec3 const& size, int some);
     void addParticleCustom(int type, int data, Vec3 const& pos);
@@ -43,6 +39,7 @@ public:
     void suspendPlayer(Player& p);
     void resumePlayer(Player& p);
     void createDimension(int id);
+    void saveGameData();
 };
 
 

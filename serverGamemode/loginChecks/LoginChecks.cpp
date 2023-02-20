@@ -11,6 +11,13 @@
 #include "../../server/statics.h"
 #include "../../server/network/packets/SetTitlePacket.h"
 #include "../bans/Bans.h"
+#include <fstream>
+#include <filesystem>
+#include <spdlog/spdlog.h>
+#include "range/v3/range.hpp"
+#include "range/v3/view/split.hpp"
+#include "../../server/network/packets/TransferPacket.h"
+
 
 bool LoginChecks::checkOnSpawn(Player& p) { //todo block all packets if not spawned
     auto lowerNick = p.nickname;
@@ -26,13 +33,14 @@ bool LoginChecks::checkOnSpawn(Player& p) { //todo block all packets if not spaw
             gotc++; //todo move to pre login
         }
     }
+
     if(gotc > 1){
-        p.disconnect("§bИгрок с этим ником §fуже онлайн");
+        statics::minecraft->disconnectClient(p.identifier, "§bИгрок с этим ником §fуже онлайн");
         return false;
     }
 
     if (lowerNick.contains("§") || lowerNick.contains("dinnerbone") || lowerNick.contains("grumm") || lowerNick.length() > 16 || lowerNick.length() < 3) {
-        p.disconnect("§bНекорректный §fникнейм");
+        statics::minecraft->disconnectClient(p.identifier, "§bНекорректный §fникнейм");
         return false;
     }
 
@@ -43,6 +51,7 @@ bool LoginChecks::checkOnSpawn(Player& p) { //todo block all packets if not spaw
    // Json::Value val("ss");
    // auto ss = p.certificate->getExtraData("idendtity", val);
    // std::cout << ss.toStyledString() << "\n";
+    spdlog::info("Player {0} ({1}:{2}) joined the game", p.nickname, p.getFuckingIpPortWithAccessToFuckingRakNetBruh().first, p.getFuckingIpPortWithAccessToFuckingRakNetBruh().second);
 
     p.sendInventory();
 
@@ -71,11 +80,40 @@ bool LoginChecks::checkOnSpawn(Player& p) { //todo block all packets if not spaw
     return true;
 }
 
-bool LoginChecks::checkOnLogin(const NetworkIdentifier &identifier) {
+bool LoginChecks::checkOnLogin(LoginPacket* login, const NetworkIdentifier &identifier) {
     auto serverPeer = statics::serverNetworkHandler->networkHandler->rakNetInstanceForServerConnections->peer;
     char str[INET_ADDRSTRLEN];
     auto sa = serverPeer->GetSystemAddressFromGuid({identifier.id});
     inet_ntop(AF_INET, &(sa.address.addr4.sin_addr), str, INET_ADDRSTRLEN);
+
+    Json::Value val("");
+    auto ss = login->req->certificate->getExtraData("identity", val);
+    auto identity = std::string(ss.asCString() -4); //todo why?
+    try {
+        auto fs = std::ifstream(std::filesystem::current_path().string() + "/register/authed/" + identity); //wtf with strings in json
+        std::stringstream buffer;
+
+        if(!fs)
+            throw std::exception();
+        buffer << fs.rdbuf();
+        auto bstr = buffer.str();
+        auto parts = bstr | ranges::views::split(';') | ranges::to<std::vector<std::string>>();
+
+        if(parts[0] != str)
+            throw std::exception();
+
+        int timed = std::stoi(parts[1]);
+
+        if((time(nullptr) - timed) >= 3)
+            throw std::exception();
+
+        std::filesystem::remove(std::filesystem::current_path().string() + "/register/authed/" + std::string(ss.asCString() -4 ));
+    }catch (...){
+        spdlog::debug("Player with identity {0} and IP {1}:{2} not registered", identity, str, sa.debugPort);
+        //TransferPacket packet; cant transfer on login
+        //statics::minecraft->disconnectClient(identifier, "");
+       // return false; //todo
+    }
 
     auto reason = Bans::isIpBanned(str);
     if(!reason.empty()){
@@ -85,5 +123,14 @@ bool LoginChecks::checkOnLogin(const NetworkIdentifier &identifier) {
         //statics::game->getServerNetworkHandler()->networkHandler->closeConnection(identifier, reason); //why that works and not works in player
        return false;
     }
+    spdlog::info("Player with identity {0} and IP {1}:{2} connected", identity, str, sa.debugPort);
     return true;
+}
+
+void LoginChecks::checkOnDisconnect(const NetworkIdentifier &identifier) {
+    auto player = statics::serverNetworkHandler->_getServerPlayer(identifier);
+    if(!player)
+        return;
+    auto ip = player->getFuckingIpPortWithAccessToFuckingRakNetBruh();
+    spdlog::info("Player {0} ({1}:{2}) disconnected", player->nickname, ip.first, ip.second);
 }

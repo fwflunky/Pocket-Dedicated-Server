@@ -12,3 +12,7 @@ ResourcePackStack::ResourcePackStack() {
 void ResourcePackStack::add(ResourcePack *i, const ResourcePackRepository &r, bool b) {
     ResourcePackStack_add(this, i, r, b);
 }
+
+ResourcePackStack *ResourcePackStack::deserialize(std::basic_fstream<char, std::char_traits<char>> &fs, const ResourcePackRepository & rpr) {
+    return ResourcePackStack_deserialize(this, fs, rpr);
+}

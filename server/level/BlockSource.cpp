@@ -3,7 +3,7 @@
 //
 
 #include "BlockSource.h"
-#include "../../hybris/include/hybris/dlfcn.h"
+#include "../../thirdParty/hybris/include/hybris/dlfcn.h"
 #include <iostream>
 #include <atomic>
 #include "../../src/hook.h"

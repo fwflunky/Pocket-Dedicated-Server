@@ -3,7 +3,7 @@
 //
 
 #include "PlayerCommandOrigin.h"
-#include "../../hybris/include/hybris/dlfcn.h"
+#include "../../thirdParty/hybris/include/hybris/dlfcn.h"
 
 void *PlayerCommandOrigin::getRequestId() {
     return nullptr;

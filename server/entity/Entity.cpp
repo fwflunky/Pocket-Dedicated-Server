@@ -3,7 +3,7 @@
 //
 
 #include "Entity.h"
-#include "../../hybris/include/hybris/dlfcn.h"
+#include "../../thirdParty/hybris/include/hybris/dlfcn.h"
 #include "../../serverGamemode/petHelper/PetHelper.h"
 #include "../../src/hook.h"
 std::string *Entity::getNameTag() {

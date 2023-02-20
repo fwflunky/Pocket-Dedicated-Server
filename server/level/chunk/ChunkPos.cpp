@@ -3,7 +3,7 @@
 //
 
 #include "ChunkPos.h"
-#include "../../../hybris/include/hybris/dlfcn.h"
+#include "../../../thirdParty/hybris/include/hybris/dlfcn.h"
 
 void ChunkPos::initHooks(void *handle) {
     ChunkPos_ctor = (void (*)(ChunkPos*, BlockPos const&)) hybris_dlsym(handle, "_ZN8ChunkPosC2ERK8BlockPos");

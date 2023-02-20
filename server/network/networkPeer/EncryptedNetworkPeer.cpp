@@ -5,7 +5,7 @@
 #include <iostream>
 #include <atomic>
 #include "EncryptedNetworkPeer.h"
-#include "../../../hybris/include/hybris/dlfcn.h"
+#include "../../../thirdParty/hybris/include/hybris/dlfcn.h"
 #include "../../../src/hook.h"
 void EncryptedNetworkPeer::initHooks(void *handle) {
     //EncryptedNetworkPeer_sendPacket = (void (*)(EncryptedNetworkPeer *, std::string, int, int)) hybris_dlsym(handle, "_ZN20EncryptedNetworkPeer10sendPacketESsN11NetworkPeer11ReliabilityEi");

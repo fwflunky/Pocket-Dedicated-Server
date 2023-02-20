@@ -3,7 +3,7 @@
 //
 
 #include "SetTitlePacket.h"
-#include "../../../hybris/include/hybris/dlfcn.h"
+#include "../../../thirdParty/hybris/include/hybris/dlfcn.h"
 
 void SetTitlePacket::initHooks(void *handle) {
     SetTitlePacket_write = (void (*)(SetTitlePacket *, void*)) hybris_dlsym(handle, "_ZNK14SetTitlePacket5writeER12BinaryStream");

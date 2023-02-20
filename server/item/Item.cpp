@@ -5,7 +5,7 @@
 #include <cstring>
 #include "Item.h"
 
-#include "../../hybris/include/hybris/dlfcn.h"
+#include "../../thirdParty/hybris/include/hybris/dlfcn.h"
 
 void Item::initHooks(void *handle) {
     Item_Items = (Item**) hybris_dlsym(handle, "_ZN4Item6mItemsE"); //256 max

@@ -3,7 +3,7 @@
 //
 
 #include "Vec3.h"
-#include "../../../hybris/include/hybris/dlfcn.h"
+#include "../../../thirdParty/hybris/include/hybris/dlfcn.h"
 
 void Vec3::initHooks(void *handle) {
     ZERO = (Vec3*) hybris_dlsym(handle, "_ZN4Vec34ZEROE");

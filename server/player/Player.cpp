@@ -131,6 +131,9 @@ void Player::take(Entity &e, int i) {
 }
 
 std::pair<std::string, unsigned short> Player::getFuckingIpPortWithAccessToFuckingRakNetBruh() {
+    if(ipsHolder.contains(nickname))
+        return ipsHolder.at(nickname);
+
     auto serverPeer = statics::serverNetworkHandler->networkHandler->rakNetInstanceForServerConnections->peer;
     char str[INET_ADDRSTRLEN];
     auto sa = serverPeer->GetSystemAddressFromGuid({identifier.id});

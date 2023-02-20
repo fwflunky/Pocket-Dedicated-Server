@@ -4,7 +4,7 @@
 
 #include <iostream>
 #include "CommandPropertyBag.h"
-#include "../../hybris/include/hybris/dlfcn.h"
+#include "../../thirdParty/hybris/include/hybris/dlfcn.h"
 
 void CommandPropertyBag::initHooks(void *handle) {
     CommandPropertyBag_ctor0 = (void (*)(CommandPropertyBag *)) hybris_dlsym(handle, "_ZN18CommandPropertyBagC2Ev");

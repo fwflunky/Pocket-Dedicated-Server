@@ -25,17 +25,19 @@ class ServerNetworkHandler {
 public:
     static void initHooks(void* handle);
 
-    static inline std::string serverMOTD = "§bAtmosphere §f'PE §b1.1§f";
+    static inline std::string serverMOTD;
     static inline std::string serverCore = "Vanilla Atmosphere";
 
     static inline void (*ServerNetworkHandler_onReady_ClientGeneration)(ServerNetworkHandler*, Player&, NetworkIdentifier const&) = nullptr;
     static inline void (*ServerNetworkHandler_disconnectClient)(ServerNetworkHandler*, NetworkIdentifier const&, std::string const&, bool) = nullptr;
-    static inline void (*ServerNetworkHandler_onDisconnect)(ServerNetworkHandler*, NetworkIdentifier&, std::string const&, bool) = nullptr;
+    static inline void (*ServerNetworkHandler_onDisconnect)(ServerNetworkHandler*, NetworkIdentifier const&, std::string const&, bool) = nullptr;
     static inline void (*ServerNetworkHandler_updateServerAnnouncement)(ServerNetworkHandler*) = nullptr;
    // static inline void (*ServerNetworkHandler_onPlayerReady)(ServerNetworkHandler*, Player&) = nullptr;
     static inline void (*ServerNetworkHandler__displayGameMessage)(ServerNetworkHandler*, const std::string&, const std::string&) = nullptr;
     static inline int (*ServerNetworkHandler__getActivePlayerCount)(ServerNetworkHandler*) = nullptr;
     static inline ServerPlayer* (*ServerNetworkHandler__getServerPlayer)(ServerNetworkHandler*, NetworkIdentifier const&) = nullptr;
+   // static inline voi (*ServerNetworkHandler_onDisconnect)(ServerNetworkHandler*, NetworkIdentifier const&, std::string const&, bool) = nullptr;
+
     static inline void (*ServerNetworkHandler_handle_TextPacket)(ServerNetworkHandler*, NetworkIdentifier const&, TextPacket&) = nullptr;
     static inline void (*ServerNetworkHandler_handle_UseItemPacket)(ServerNetworkHandler*, NetworkIdentifier const&, UseItemPacket&) = nullptr;
     static inline void (*ServerNetworkHandler_handle_RemoveBlockPacket)(ServerNetworkHandler*, NetworkIdentifier const&, RemoveBlockPacket&) = nullptr;
@@ -46,6 +48,7 @@ public:
 
     void _displayGameMessage(const std::string& pref, const std::string& msg);
     void onReady_ClientGeneration(Player& p, NetworkIdentifier& ne);
+    void onDisconnect(NetworkIdentifier const& identifier, std::string const& reason, bool hide);
     //void onPlayerReady(Player& p);
     void disconnectClient(const NetworkIdentifier & id, const std::string& msg, bool s);
     int _getActivePlayerCount();

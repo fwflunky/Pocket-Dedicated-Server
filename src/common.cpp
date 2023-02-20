@@ -10,8 +10,8 @@
 #include <malloc.h>
 
 extern "C" {
-#include "../hybris/include/hybris/hook.h"
-#include "../hybris/include/hybris/dlfcn.h"
+#include "../thirdParty/hybris/include/hybris/hook.h"
+#include "../thirdParty/hybris/include/hybris/dlfcn.h"
 }
 
 std::string getCWD() {

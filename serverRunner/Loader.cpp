@@ -5,9 +5,10 @@
 #include <iostream>
 #include <thread>
 #include <fcntl.h>
+#include <filesystem>
 #include "Loader.h"
 #include "minecraftGame/api/Api.h"
-#include "../hybris/include/hybris/dlfcn.h"
+#include "../thirdParty/hybris/include/hybris/dlfcn.h"
 #include "appPlatform/LinuxAppPlatform.h"
 #include "level/LevelSettings.h"
 #include "filePathManager/FilePathManager.h"
@@ -31,6 +32,8 @@
 #include "minecraftGame/Minecraft.h"
 #include "../server/statics.h"
 #include "../server/level/Level.h"
+#include "config/Config.h"
+#include "spdlog/spdlog.h"
 
 void Loader::initHooks(void *handle) {
     auto patchOff = (unsigned int) hybris_dlsym(handle, "_ZN12AndroidStore21createGooglePlayStoreERKSsR13StoreListener");
@@ -75,9 +78,12 @@ void Loader::initHooks(void *handle) {
     ResourcePackManager::ResourcePackManager_construct = (void (*)(ResourcePackManager *, std::function<std::string()>)) hybris_dlsym(handle, "_ZN19ResourcePackManagerC2ESt8functionIFSsvEE");
     ResourcePackManager::ResourcePackManager_setStack = (void (*)(ResourcePackManager *, std::unique_ptr<ResourcePackStack>, int, bool)) hybris_dlsym(handle, "_ZN19ResourcePackManager8setStackESt10unique_ptrI17ResourcePackStackSt14default_deleteIS1_EE21ResourcePackStackTypeb");
     ResourcePackStack::ResourcePackStack_add = (void (*)(ResourcePackStack *, ResourcePack *i, ResourcePackRepository const &r, bool b)) hybris_dlsym(handle, "_ZN17ResourcePackStack3addEP12ResourcePackRK22ResourcePackRepositoryb");
+    ResourcePackStack::ResourcePackStack_deserialize = (ResourcePackStack* (*)(ResourcePackStack *, std::basic_fstream<char, std::char_traits<char> >&, ResourcePackRepository const&)) hybris_dlsym(handle, "_ZN17ResourcePackStack11deserializeERSt13basic_fstreamIcSt11char_traitsIcEERK22ResourcePackRepository");
     ResourcePackStack::vtable_sym = (void **) hybris_dlsym(handle, "_ZTV17ResourcePackStack");
     PackManifestFactory::PackManifestFactory_construct = (void (*)(PackManifestFactory *, MinecraftEventing &)) hybris_dlsym(handle, "_ZN19PackManifestFactoryC2ER17MinecraftEventing");
     ResourcePackRepository::ResourcePackRepository_construct = (void (*)(ResourcePackRepository *, MinecraftEventing &, PackManifestFactory &, EntitlementManager *, FilePathManager *)) hybris_dlsym(handle, "_ZN22ResourcePackRepositoryC2ER17MinecraftEventingR19PackManifestFactoryP18EntitlementManagerP15FilePathManager");
+    ResourcePackRepository::ResourcePackRepository_addWorldResourcePacks = (void (*)(ResourcePackRepository *, std::string const&)) hybris_dlsym(handle, "_ZN22ResourcePackRepository21addWorldResourcePacksERKSs");
+    ResourcePackRepository::ResourcePackRepository_refreshPacks = (void (*)(ResourcePackRepository *)) hybris_dlsym(handle, "_ZN22ResourcePackRepository12refreshPacksEv");
     //ResourcePackRepository::ResourcePackRepository_getPackLoadingReport = (void (*)(ResourcePackRepository*, MinecraftEventing&, PackManifestFactory&, EntitlementManager*, FilePathManager*)) hybris_dlsym(handle, "_ZN22ResourcePackRepositoryC2ER17MinecraftEventingR19PackManifestFactoryP18EntitlementManagerP15FilePathManager");
     hookFunction((void *) hybris_dlsym(handle, "_ZNK22ResourcePackRepository20getPackLoadingReportEv"), (void *) &ResourcePackRepository::getPackLoadingReport, (void **) &ResourcePackRepository::ResourcePackRepository_getPackLoadingReport);
 
@@ -110,8 +116,14 @@ void Loader::initHooks(void *handle) {
 }
 
 void Loader::load(void *handle) {
+    auto timeAtLoadEntry = std::chrono::system_clock::now();
 
-    statics::log::info("Initialize hooks");
+    spdlog::set_level(spdlog::level::debug);
+    spdlog::set_pattern("[\033[1;34m%H:%M:%S\033[0m] [%^%l%$] [\033[1;4m\033[1;34mPDS\033[1;24m\033[0m] %v");
+
+    spdlog::info("Starting Pocket Dedicated Server v{0}", PDSVER);
+    Config::read();
+    ServerNetworkHandler::serverMOTD = Config::getMOTD();
     initHooks(handle);
 
     LinuxAppPlatform::initVtable(handle);
@@ -121,19 +133,19 @@ void Loader::load(void *handle) {
     minecraft::api::Api api;
     {
         api.vtable = (void **) hybris_dlsym(handle, "_ZTVN9minecraft3api3ApiE") + 2;
-        api.envPath = CWDD;
+        api.envPath = std::filesystem::current_path().string() + "/";
         api.playerIfaceVtable = (void **) hybris_dlsym(handle, "_ZTVN9minecraft3api15PlayerInterfaceE") + 2;
         api.networkIfaceVtable = (void **) hybris_dlsym(handle, "_ZTVN9minecraft3api16NetworkInterfaceE") + 2;
     }
 
     LevelSettings settings;
     {
-        settings.seed = 4544467;
-        settings.gameType = 0;
-        settings.forceGameType = 0;
-        settings.difficulty = 2;
+        settings.seed = Config::getWorldSeed();
+        settings.gameType = Config::getWorldGameType();
+        settings.forceGameType = settings.gameType;
+        settings.difficulty = Config::getWorldDifficulty();
         settings.dimension = 0;
-        settings.generator = 1;
+        settings.generator = Config::getWorldGenerator();
         settings.edu = false;
         settings.mpGame = true;
         settings.lanBroadcast = true;
@@ -142,11 +154,11 @@ void Loader::load(void *handle) {
         settings.hasAchievementsDisabled = true;
     }
 
-    FilePathManager filePathManager(CWDD, false);
-    MinecraftEventing eventing(CWDD);
+    FilePathManager filePathManager(std::filesystem::current_path().string() + "/", false);
+    MinecraftEventing eventing(std::filesystem::current_path().string() + "/");
 
     ResourcePackManager resourcePackManager([]() {
-        return CWDD;
+        return std::filesystem::current_path().string() + "/";
     });
 
     PackManifestFactory packManifestFactory(eventing);
@@ -157,12 +169,14 @@ void Loader::load(void *handle) {
     ResourcePackRepository resourcePackRepo(eventing, packManifestFactory, entitlementManager, &filePathManager);
 
     if (!resourcePackRepo.vanillaBehaviorPack) {
-        statics::log::error("Unable to find vanilla BehaviorPack");
+        spdlog::error("Unable to find vanilla BehaviorPack, can't continue without game logic.");
         return workaroundShutdownCrash(handle);
     }
     std::unique_ptr<ResourcePackStack> stack(new ResourcePackStack());
     stack->add(resourcePackRepo.vanillaBehaviorPack, resourcePackRepo, false);
     resourcePackManager.setStack(std::move(stack), 3, false);
+    //resourcePackRepo.addWorldResourcePacks(CWDD "games/com.mojang/minecraftWorlds/dsdd=");
+    //resourcePackRepo.refreshPacks();
 
     OriginalOpsList ops;
     OriginalWhiteList wl;
@@ -174,21 +188,24 @@ void Loader::load(void *handle) {
     minecraftApp.automationClient = &aclient;
 
 
-    statics::log::info("Starting server...");
-    instance = new ServerInstance(minecraftApp, wl, ops, &filePathManager, std::chrono::duration_cast<std::chrono::duration<long long>>(std::chrono::seconds(10)), "SawAADYtAAA=", "My world", "", "", "", settings, api, 8, true, 19132, 19132, 1000 - 7, false, {}, "normal", false, *mce::UUID::EMPTY, eventing, resourcePackRepo, resourcePackManager, &resourcePackManager);
-    statics::log::info("Server started");
+    spdlog::info("Starting server...");
+    spdlog::debug("Server port: {0}", Config::getServerPort());
+    instance = new ServerInstance(minecraftApp, wl, ops, &filePathManager, std::chrono::duration_cast<std::chrono::duration<long long>>(std::chrono::seconds(10)), Config::getWorldLevelId(), Config::getWorldLevelName(), "motd", "", "sdsd", settings, api, 8, true, Config::getServerPort(), Config::getServerPort(), Config::getMaxOnline(), false, {}, "normal", false, *mce::UUID::EMPTY, eventing, resourcePackRepo, resourcePackManager, &resourcePackManager);
+    spdlog::info("Server started successfully");
     statics::serverNetworkHandler = instance->minecraft->getServerNetworkHandler();
     statics::minecraft = instance->minecraft;
 
+    spdlog::debug("Loading dimensions...");
     auto level = instance->minecraft->getLevel();
     level->createDimension(1);
     level->createDimension(2);
-
+    std::chrono::duration<float> diff = std::chrono::system_clock::now() - timeAtLoadEntry;
+    spdlog::debug("Dimensions loaded. Server started up for {0} ms.", diff.count()); //std::to_string(diff.count())
     auto tp = std::chrono::steady_clock::now();
     int updatesPerSecond = 100;
 
-    int flags = fcntl(0, F_GETFL, 0);
-    fcntl(0, F_SETFL, flags | O_NONBLOCK);
+    registerCtrlCHandler();
+
     char lineBuffer[1024 * 16];
     size_t lineBufferOffset = 0;
 
@@ -215,7 +232,7 @@ void Loader::load(void *handle) {
     }
     stop();
     workaroundShutdownCrash(handle);
-    statics::log::info("Server stopped");
+    spdlog::info("Server stopped");
 }
 
 void Loader::processCommands(char *lineBuffer, size_t &lineBufferOffset) {
@@ -241,10 +258,41 @@ void Loader::processCommands(char *lineBuffer, size_t &lineBufferOffset) {
 
 void Loader::handleCommand(const std::string &cmd) {
     if (cmd == "stop") {
+        doOnStop();
         isShutdown = true;
     }
 }
 
 void Loader::stop() {
     instance->stop();
+}
+
+void Loader::ctrlC(int) {
+    if(isShutdown)
+        return;
+    std::cout << "\n";
+    spdlog::info("Stopping server...");
+    doOnStop();
+    isShutdown = true;
+}
+
+void Loader::registerCtrlCHandler() {
+    int flags = fcntl(0, F_GETFL, 0);
+    fcntl(0, F_SETFL, flags | O_NONBLOCK);
+
+    struct sigaction act{};
+    act.sa_handler = (void (*)(int)) Loader::ctrlC;
+    sigemptyset(&act.sa_mask);
+    act.sa_flags = 0;
+    sigaction(SIGTERM, &act, nullptr);
+    sigaction(SIGINT, &act, nullptr);
+}
+
+void Loader::doOnStop() {
+    statics::runOnNextTick([]() {
+        statics::serverNetworkHandler->mainLevel->saveGameData();
+        for (auto *user: *statics::serverNetworkHandler->mainLevel->getUsers()) {
+            statics::minecraft->disconnectClient(user->identifier, "Server stopped");
+        }
+    });
 }

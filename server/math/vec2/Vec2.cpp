@@ -4,7 +4,7 @@
 
 #include "Vec2.h"
 
-#include "../../../hybris/include/hybris/dlfcn.h"
+#include "../../../thirdParty/hybris/include/hybris/dlfcn.h"
 
 void Vec2::initHooks(void *handle) {
     ZERO = (Vec2*) hybris_dlsym(handle, "_ZN4Vec24ZEROE");

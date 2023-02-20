@@ -3,7 +3,7 @@
 //
 
 #include "RakNetServerLocator.h"
-#include "../../hybris/include/hybris/dlfcn.h"
+#include "../../thirdParty/hybris/include/hybris/dlfcn.h"
 void RakNetServerLocator::initHooks(void *handle) {
     RakNetServerLocator_announceServer = (void (*)(RakNetServerLocator *, std::string const&, std::string const&, int, int, int)) hybris_dlsym(handle, "_ZN19RakNetServerLocator14announceServerERKSsS1_8GameTypeii");
 }

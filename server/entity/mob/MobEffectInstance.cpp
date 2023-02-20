@@ -3,7 +3,7 @@
 //
 
 #include "MobEffectInstance.h"
-#include "../../../hybris/include/hybris/dlfcn.h"
+#include "../../../thirdParty/hybris/include/hybris/dlfcn.h"
 
 void MobEffectInstance::initHooks(void *handle) {
     MobEffectInstance_ctor = (void (*)(MobEffectInstance *, int, int, int)) hybris_dlsym(handle, "_ZN17MobEffectInstanceC2Eiii");

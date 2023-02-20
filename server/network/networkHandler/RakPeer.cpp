@@ -4,7 +4,7 @@
 
 #include <iostream>
 #include "RakPeer.h"
-#include "../../../hybris/include/hybris/dlfcn.h"
+#include "../../../thirdParty/hybris/include/hybris/dlfcn.h"
 #include "../../../src/hook.h"
 
 void RakPeer::initHooks(void *handle) {
