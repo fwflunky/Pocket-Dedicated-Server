@@ -14,7 +14,7 @@ Vanilla (or not so) server software for [Minecraft: Pocket Edition 1.1](https://
 ## Roadmap
 
 #### Plugins (so to speak cuz they're builtin)
-- [x]  Custom Commands System
+- [x]  Custom Commands System (todo: permission system with commands.json support)
 - [x]  Region Guard System
 - [x]  Ban System (WIP for other type of bans)
 - [x]  Teleport System
