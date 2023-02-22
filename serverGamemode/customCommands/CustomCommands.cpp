@@ -3,10 +3,11 @@
 //
 
 #include "CustomCommands.h"
+#include "../../server/statics.h"
 
 void CustomCommands::handleStep(CommandStepPacket &packet, ServerPlayer *player) {
     if(packet.command.size() > 30 || packet.inputJson.size() > 500)
-        return player->disconnect("%disconnectionScreen.badPacket (CommandStepPacket)"); //block here
+        return statics::minecraft->disconnectClient(player->identifier, "%disconnectionScreen.badPacket (CommandStepPacket)"); //block here
 
     nlohmann::json jsonObj = nlohmann::json::parse(packet.inputJson);
     if(registeredCommands.contains(packet.command)) {

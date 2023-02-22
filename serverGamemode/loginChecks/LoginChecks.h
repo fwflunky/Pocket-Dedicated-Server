@@ -13,7 +13,7 @@ class LoginChecks {
 public:
     static bool checkOnLogin(LoginPacket* login, const NetworkIdentifier& identifier); //todo
     static bool checkOnSpawn(Player& p);
-    static void checkOnDisconnect(const NetworkIdentifier& identifier);
+    static void checkOnDisconnect(const NetworkIdentifier& identifier, const std::string& reason);
 };
 
 

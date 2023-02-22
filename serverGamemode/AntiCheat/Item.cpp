@@ -5,6 +5,7 @@
 #include "Item.h"
 #include "../../server/player/inventory/ContainerManagerModel.h"
 #include "../../server/player/inventory/ChestContainerManagerModel.h"
+#include "../../server/statics.h"
 
 bool AntiCheat::Item::onContainerSetSlotPacket(ServerPlayer *player, ContainerSetSlotPacket &pk) {
     return true;
@@ -105,7 +106,7 @@ bool AntiCheat::Item::checkFromOpenContainer(ServerPlayer *player, ItemInstance 
                 break;
             }
             default: {
-                player->disconnect("unknown container opened with type " + std::to_string(((ContainerManagerModel *) player->openedContainerManager)->type));
+                statics::minecraft->disconnectClient(player->identifier, "unknown container opened with type " + std::to_string(((ContainerManagerModel *) player->openedContainerManager)->type));
             }
         }
     }

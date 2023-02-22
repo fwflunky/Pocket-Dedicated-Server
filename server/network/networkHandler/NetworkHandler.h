@@ -18,11 +18,13 @@ namespace NetworkHandler {
         static inline BatchedNetworkPeer* (*NetworkHandler_getPeerForUser)(NetworkHandler*, NetworkIdentifier const&) = nullptr;
         static inline void (*NetworkHandler_ctor)(NetworkHandler*) = nullptr;
         static inline void (*NetworkHandler_closeConnection)(NetworkHandler*, NetworkIdentifier const&, std::string const&) = nullptr;
+        static inline void (*NetworkHandler_setCloseConnection)(NetworkHandler*, NetworkIdentifier const&) = nullptr;
         static inline void (*NetworkHandler_send)(NetworkHandler*, NetworkIdentifier const&, Packet const&) = nullptr;
 
         NetworkHandler();
         BatchedNetworkPeer* getPeerForUser(NetworkIdentifier const& i);
         void closeConnection(NetworkIdentifier const&, std::string const&);
+        void setCloseConnection(NetworkIdentifier const&);
         void send(NetworkIdentifier const&, Packet const&);
 
 

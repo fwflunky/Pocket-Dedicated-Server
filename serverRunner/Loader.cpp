@@ -211,7 +211,7 @@ void Loader::load(void *handle) {
     size_t lineBufferOffset = 0;
 
 
-    while (!isShutdown) {
+    while (!isShutdown || (time(nullptr) <= pleaseDontStopBeforeThis)) {
         processCommands(&lineBuffer[0], lineBufferOffset);
         auto tp2 = std::chrono::steady_clock::now();
         instance->update();
@@ -291,10 +291,11 @@ void Loader::registerCtrlCHandler() {
 }
 
 void Loader::doOnStop() {
+    pleaseDontStopBeforeThis = time(nullptr) + 2;
     statics::runOnNextTick([]() {
         statics::serverNetworkHandler->mainLevel->saveGameData();
         for (auto *user: *statics::serverNetworkHandler->mainLevel->getUsers()) {
-            statics::minecraft->disconnectClient(user->identifier, "Server stopped");
+            statics::minecraft->disconnectClient(user->identifier, "disconnectionScreen.noReason");
         }
     });
 }

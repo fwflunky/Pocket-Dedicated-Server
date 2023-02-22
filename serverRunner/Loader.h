@@ -16,6 +16,7 @@ public:
 
     static inline ServerInstance* instance = nullptr;
     static inline bool isShutdown = false;
+    static inline time_t pleaseDontStopBeforeThis = 0;
 
     static void load(void* handle);
     static void handleCommand(const std::string& cmd);

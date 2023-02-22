@@ -18,6 +18,7 @@ void Level::initHooks(void *handle) {
     Level_resumePlayer = (void (*)(Level*, Player&)) hybris_dlsym(handle, "_ZN5Level12resumePlayerER6Player");
     Level_createDimension = (void (*)(Level*, int)) hybris_dlsym(handle, "_ZN5Level15createDimensionE11DimensionId");
     Level_saveGameData = (void (*)(Level*)) hybris_dlsym(handle, "_ZN5Level12saveGameDataEv");
+    Level_forceFlushRemovedPlayers = (void (*)(Level*)) hybris_dlsym(handle, "_ZN5Level24forceFlushRemovedPlayersEv");
 }
 
 std::vector<Player *>* Level::getUsers() {
@@ -62,4 +63,8 @@ void Level::createDimension(int id) {
 
 void Level::saveGameData() {
     Level_saveGameData(this);
+}
+
+void Level::forceFlushRemovedPlayers() {
+    Level_forceFlushRemovedPlayers(this);
 }

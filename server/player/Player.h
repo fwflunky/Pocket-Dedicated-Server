@@ -19,7 +19,7 @@
 class Player : public Mob {
 public:
     static void initHooks(void* handle);
-    static inline std::unordered_map<std::string, std::pair<std::string, int>> ipsHolder;
+    static inline std::unordered_map<unsigned long long, std::pair<std::string, int>> ipsHolder;
 
     static inline void (*Player_addItem)(Player*, ItemInstance&) = nullptr;
     static inline void (*Player_sendInventory)(Player*) = nullptr;
@@ -32,6 +32,7 @@ public:
     static inline bool (*Player__hurt)(Player*, EntityDamageSource const&, int, bool, bool) = nullptr;
     static inline void (*Player_setContainerManager)(Player*, std::shared_ptr<IContainerManager>) = nullptr;
     static inline void (*Player_take)(Player*, Entity&, int) = nullptr;
+    static inline void (*Player_remove)(Player*) = nullptr;
     static inline std::shared_ptr<IContainerManager> (*Player_getContainerManager)(Player*) = nullptr;
 
     char filler[4016 - sizeof(Mob)];
@@ -68,6 +69,7 @@ public:
     void setContainerManager(std::shared_ptr<IContainerManager> cont);
     std::shared_ptr<IContainerManager> getContainerManager();
     void take(Entity& e, int i);
+    void remove();
     std::pair<std::string, unsigned short> getFuckingIpPortWithAccessToFuckingRakNetBruh();
 };
 

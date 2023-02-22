@@ -38,6 +38,7 @@ void Player::initHooks(void *handle) {
     Player_updateTeleportDestPos = (void (*)(Player*)) hybris_dlsym(handle, "_ZN6Player21updateTeleportDestPosEv");
     Player_getSpawnPosition = (Vec3 (*)(Player*)) hybris_dlsym(handle, "_ZN6Player16getSpawnPositionEv");
     Player_getContainerManager = (std::shared_ptr<IContainerManager> (*)(Player*)) hybris_dlsym(handle, "_ZN6Player19getContainerManagerEv");
+    Player_remove = (void (*)(Player*)) hybris_dlsym(handle, "_ZN6Player6removeEv");
     hookFunction((void *) hybris_dlsym(handle, "_ZN6Player5_hurtERK18EntityDamageSourceibb"), (void *) &Player::_hurt, (void **) &Player::Player__hurt);
     hookFunction((void *) hybris_dlsym(handle, "_ZN6Player19setContainerManagerESt10shared_ptrI17IContainerManagerE"), (void *) &Player::setContainerManager, (void **) &Player::Player_setContainerManager);
     hookFunction((void *) hybris_dlsym(handle, "_ZN6Player4takeER6Entityi"), (void *) &Player::take, (void **) &Player::Player_take);
@@ -129,12 +130,11 @@ void Player::take(Entity &e, int i) {
 }
 
 std::pair<std::string, unsigned short> Player::getFuckingIpPortWithAccessToFuckingRakNetBruh() {
-    if(ipsHolder.contains(nickname))
-        return ipsHolder.at(nickname);
+    if(ipsHolder.contains(identifier.id))
+        return ipsHolder.at(identifier.id);
+    return {};
+}
 
-    auto serverPeer = statics::serverNetworkHandler->networkHandler->rakNetInstanceForServerConnections->peer;
-    char str[INET_ADDRSTRLEN];
-    auto sa = serverPeer->GetSystemAddressFromGuid({identifier.id});
-    inet_ntop(AF_INET, &(sa.address.addr4.sin_addr), str, INET_ADDRSTRLEN);
-    return {str, sa.debugPort};
+void Player::remove() {
+    Player_remove(this);
 }

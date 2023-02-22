@@ -23,6 +23,7 @@ public:
     static inline bool (*ServerPlayer__sendQueuedChunk)(ServerPlayer*, QueuedChunk const&) = nullptr;
     static inline void (*ServerPlayer_openInventory)(ServerPlayer*) = nullptr;
     static inline void (*ServerPlayer_setPlayerGameType)(ServerPlayer*, int) = nullptr;
+    static inline void (*ServerPlayer_disconnect)(ServerPlayer*) = nullptr;
 
     NetworkHandler::NetworkHandler* networkHandler;
     char filler[4772 - (4626+4)];
@@ -32,6 +33,7 @@ public:
     bool _sendQueuedChunk(QueuedChunk const& ch);
     void openInventory();
     void setPlayerGameType(int type);
+    void disconnect();
 };
 
 #endif //MCPELAUNCHER_SERVERPLAYER_H

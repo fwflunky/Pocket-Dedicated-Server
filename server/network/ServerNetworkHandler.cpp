@@ -22,6 +22,8 @@
 #include "../../serverGamemode/customCommands/CustomCommands.h"
 #include "../../serverGamemode/AntiCheat/Item.h"
 #include "../../serverGamemode/loginChecks/LoginChecks.h"
+#include "spdlog/spdlog.h"
+#include "../../src/common.h"
 #include <string>
 #include <cstring>
 #include <arpa/inet.h>
@@ -29,7 +31,7 @@
 
 void ServerNetworkHandler::initHooks(void *handle) {
     ServerNetworkHandler_disconnectClient = (void (*)(ServerNetworkHandler *, NetworkIdentifier const &, std::string const &, bool)) hybris_dlsym(handle, "_ZN20ServerNetworkHandler16disconnectClientERK17NetworkIdentifierRKSsb");
-    ServerNetworkHandler_onDisconnect = (void (*)(ServerNetworkHandler *, NetworkIdentifier const&, std::string const &, bool)) hybris_dlsym(handle, "_ZN20ServerNetworkHandler12onDisconnectERK17NetworkIdentifierRKSsb");
+    ServerNetworkHandler_onDisconnect = (void (*)(ServerNetworkHandler *, NetworkIdentifier const &, std::string const &, bool)) hybris_dlsym(handle, "_ZN20ServerNetworkHandler12onDisconnectERK17NetworkIdentifierRKSsb");
     ServerNetworkHandler__displayGameMessage = (void (*)(ServerNetworkHandler *, const std::string &, const std::string &)) hybris_dlsym(handle, "_ZN20ServerNetworkHandler19_displayGameMessageERKSsS1_");
     ServerNetworkHandler__getActivePlayerCount = (int (*)(ServerNetworkHandler *)) hybris_dlsym(handle, "_ZNK20ServerNetworkHandler21_getActivePlayerCountEv");
     ServerNetworkHandler__getServerPlayer = (ServerPlayer *(*)(ServerNetworkHandler *, NetworkIdentifier const &)) hybris_dlsym(handle, "_ZN20ServerNetworkHandler16_getServerPlayerERK17NetworkIdentifier");
@@ -47,10 +49,7 @@ void ServerNetworkHandler::initHooks(void *handle) {
 }
 
 void ServerNetworkHandler::onReady_ClientGeneration(Player &p, NetworkIdentifier &ne) {
-    auto name = p.nickname;
-    Player::ipsHolder.insert({p.nickname, p.getFuckingIpPortWithAccessToFuckingRakNetBruh()});
-
-    if(LoginChecks::checkOnSpawn(p))
+    if (LoginChecks::checkOnSpawn(p))
         ServerNetworkHandler_onReady_ClientGeneration(this, p, ne);
 }
 
@@ -99,11 +98,11 @@ void ServerNetworkHandler::setMaxPlayers(int count) {
 }
 
 void ServerNetworkHandler::updateServerAnnouncement() const {
-    serverLocator->announceServer(serverMOTD, serverCore, 0, currentPlayerCount, maxPlayersCount); //0 - game type
+    serverLocator->announceServer(serverMOTD, serverCore, 0, 1, maxPlayersCount); //0 - game type
 }
 
 void ServerNetworkHandler::handleUseItemPacket(const NetworkIdentifier &ident, UseItemPacket &pk) {
-    if(!RegionGuard::handleUseItem(_getServerPlayer(ident), pk)) {
+    if (!RegionGuard::handleUseItem(_getServerPlayer(ident), pk)) {
         return;
     }
 
@@ -112,7 +111,7 @@ void ServerNetworkHandler::handleUseItemPacket(const NetworkIdentifier &ident, U
 
 //1128 != 0
 void ServerNetworkHandler::handleRemoveBlockPacket(const NetworkIdentifier &ident, RemoveBlockPacket &pk) {
-    if(!RegionGuard::handleRemoveBlock(_getServerPlayer(ident), pk)) {
+    if (!RegionGuard::handleRemoveBlock(_getServerPlayer(ident), pk)) {
         return;
     }
 
@@ -131,20 +130,60 @@ void ServerNetworkHandler::handleCommandStepPacket(const NetworkIdentifier &iden
 void ServerNetworkHandler::handleContainerSetSlotPacket(const NetworkIdentifier &ident, ContainerSetSlotPacket &pk) {
     //if(pk.item.count != 0)
     //    std::cout << pk.item.itemOrBlock->fullName << "\n";
-    if(!AntiCheat::Item::onContainerSetSlotPacket(_getServerPlayer(ident), pk)) {
+    if (!AntiCheat::Item::onContainerSetSlotPacket(_getServerPlayer(ident), pk)) {
         return;
     }
     ServerNetworkHandler_handle_ContainerSetSlotPacket(this, ident, pk);
 }
 
 void ServerNetworkHandler::handleLoginPacket(const NetworkIdentifier &ident, LoginPacket &pk) {
+    if(Player::ipsHolder.contains(ident.id)) { //shouldn't happen
+        return statics::minecraft->disconnectClient(ident, "double session");
+    }
+    auto serverPeer = statics::serverNetworkHandler->networkHandler->rakNetInstanceForServerConnections->peer;
+    char str[INET_ADDRSTRLEN];
+    auto sa = serverPeer->GetSystemAddressFromGuid({ident.id});
+    inet_ntop(AF_INET, &(sa.address.addr4.sin_addr), str, INET_ADDRSTRLEN);
+
+    Player::ipsHolder.insert({ident.id, {str, sa.debugPort}});
+
     pk.req->verifySelfSigned();
-    if(LoginChecks::checkOnLogin(&pk, ident))
+    if (LoginChecks::checkOnLogin(&pk, ident))
         ServerNetworkHandler_handle_LoginPacket(this, ident, pk);
 }
 
 void ServerNetworkHandler::onDisconnect(const NetworkIdentifier &identifier, const std::string &reason, bool hide) {
-    LoginChecks::checkOnDisconnect(identifier);
-    Player::ipsHolder.erase(_getServerPlayer(identifier)->nickname);
-    ServerNetworkHandler_onDisconnect(this, identifier, reason, hide);
+    auto sp = _getServerPlayer(identifier);
+    if (sp != nullptr && Player::ipsHolder.contains(identifier.id)) { //fix for multiple disconnect messages, IDK why
+        LoginChecks::checkOnDisconnect(identifier, reason);
+        Player::ipsHolder.erase(identifier.id);
+        ((void (*)(LevelStorage *, Player &)) statics::serverNetworkHandler->mainLevel->levelStorage->vtable[15])(statics::serverNetworkHandler->mainLevel->levelStorage, *sp); //DBStorage::save
+        customDisconnectHandler(sp, reason, hide);
+    }
+}
+
+void ServerNetworkHandler::customDisconnectHandler(ServerPlayer* sp, const std::string &reason, bool hide) {
+    std::thread([&, identifier = sp->identifier, reason, nick = sp->nickname]() {
+        spdlog::debug("customDisconnectHandler: got player {0}", nick);
+
+        auto b = true;
+        while (b) {
+            statics::runOnNextTick([&]() {
+                if (auto threadP = _getServerPlayer(identifier); !threadP)
+                    return b = false;
+                else {
+                    spdlog::debug("customDisconnectHandler: runOnNextTick: player {0} not deleted", nick);
+                    threadP->remove();
+                    threadP->disconnect();
+                    networkHandler->setCloseConnection(identifier);
+                }
+            });
+            usleep(1000 * 10);
+        }
+        spdlog::debug("customDisconnectHandler: player {0} successfully disconnected with reason: {1}", nick, reason);
+        spdlog::info("Player {0} successfully disconnected with reason: {1}", nick, reason);
+        statics::runOnNextTick([&]() {
+            statics::serverNetworkHandler->mainLevel->forceFlushRemovedPlayers();
+        });
+    }).detach();
 }

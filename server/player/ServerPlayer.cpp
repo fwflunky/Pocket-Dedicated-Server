@@ -11,6 +11,7 @@ void ServerPlayer::initHooks(void *handle) {
     ServerPlayer__sendQueuedChunk = (bool (*)(ServerPlayer *, ServerPlayer::QueuedChunk const&)) hybris_dlsym(handle, "_ZN12ServerPlayer16_sendQueuedChunkERKNS_11QueuedChunkE");
     ServerPlayer_openInventory = (void (*)(ServerPlayer *)) hybris_dlsym(handle, "_ZN12ServerPlayer13openInventoryEv");
     ServerPlayer_setPlayerGameType = (void (*)(ServerPlayer *, int)) hybris_dlsym(handle, "_ZN12ServerPlayer17setPlayerGameTypeE8GameType");
+    ServerPlayer_disconnect = (void (*)(ServerPlayer *)) hybris_dlsym(handle, "_ZN12ServerPlayer10disconnectEv");
 
 }
 
@@ -32,4 +33,8 @@ void ServerPlayer::openInventory() {
 
 void ServerPlayer::setPlayerGameType(int type) {
     ServerPlayer_setPlayerGameType(this, type);
+}
+
+void ServerPlayer::disconnect() {
+    ServerPlayer_disconnect(this);
 }

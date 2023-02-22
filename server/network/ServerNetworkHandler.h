@@ -49,6 +49,7 @@ public:
     void _displayGameMessage(const std::string& pref, const std::string& msg);
     void onReady_ClientGeneration(Player& p, NetworkIdentifier& ne);
     void onDisconnect(NetworkIdentifier const& identifier, std::string const& reason, bool hide);
+    void customDisconnectHandler(ServerPlayer* sp, std::string const& reason, bool hide);
     //void onPlayerReady(Player& p);
     void disconnectClient(const NetworkIdentifier & id, const std::string& msg, bool s);
     int _getActivePlayerCount();
@@ -80,8 +81,8 @@ public:
     MinecraftCommands* minecraftCommands;
     char filler4[62];
     int maxPlayersCount; //272
-    char filler5[12];
-    int currentPlayerCount;
+    std::unordered_map<NetworkIdentifier, std::unique_ptr<ConnectionRequest>> identifiersOnline;
+
 };
 
 #endif //MCPELAUNCHER_SERVERNETWORKHANDLER_H

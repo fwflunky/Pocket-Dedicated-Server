@@ -8,6 +8,7 @@
 
 #include <vector>
 #include "../player/Player.h"
+#include "../util/storage/LevelStorage.h"
 
 class Level {
 public:
@@ -23,11 +24,14 @@ public:
     static inline void (*Level_resumePlayer)(Level*, Player&) = nullptr;
     static inline void (*Level_createDimension)(Level*, int) = nullptr;
     static inline void (*Level_saveGameData)(Level*) = nullptr;
+    static inline void (*Level_forceFlushRemovedPlayers)(Level*) = nullptr;
     //static inline int (*Level_addTerrainParticle)(Level*, int, Vec3 const&, Vec3 const&, int) = nullptr;
 
     char filler[111];
     int someInt1;
     int someInt2;
+    char filler1[4];
+    LevelStorage* levelStorage;
 
     std::vector<Player*>* getUsers();
     void setTime(int time);
@@ -40,6 +44,7 @@ public:
     void resumePlayer(Player& p);
     void createDimension(int id);
     void saveGameData();
+    void forceFlushRemovedPlayers();
 };
 
 
