@@ -91,6 +91,12 @@ bool LoginChecks::checkOnLogin(LoginPacket *login, const NetworkIdentifier &iden
     std::transform(lowerNick.begin(), lowerNick.end(), lowerNick.begin(),
                    [](unsigned char c) { return std::tolower(c); });
 
+    if (lowerNick.contains("dinnerbone") || lowerNick.contains("grumm") || lowerNick.length() > 16 || lowerNick.length() < 3 ||
+    (lowerNick.find_first_not_of("abcdefghijklmnopqrstuvwxyz0123456789-_") != std::string::npos)) {
+        statics::minecraft->disconnectClient(identifier, "%disconnectionScreen.cantConnectToRealm:\nInvalid nickname");
+        return false;
+    }
+
     for (auto user: *statics::serverNetworkHandler->mainLevel->getUsers()) {
         auto unick = user->nickname;
         std::transform(unick.begin(), unick.end(), unick.begin(),
@@ -99,13 +105,6 @@ bool LoginChecks::checkOnLogin(LoginPacket *login, const NetworkIdentifier &iden
             statics::minecraft->disconnectClient(identifier, "%disconnectionScreen.loggedinOtherLocation:\nPlayer already in game");
             return false;
         }
-    }
-
-
-    if (lowerNick.contains("§") || lowerNick.contains("dinnerbone") || lowerNick.contains("grumm") || lowerNick.length() > 16 || lowerNick.length() < 3 ||
-    (lowerNick.find_first_not_of("abcdefghijklmnopqrstuvwxyz0123456789-_") != std::string::npos)) {
-        statics::minecraft->disconnectClient(identifier, "%disconnectionScreen.cantConnectToRealm:\nInvalid nickname");
-        return false;
     }
 
     if (!Whitelist::byNickIsAllowed(displayName)) { //not lower

@@ -34,6 +34,7 @@
 #include "../server/level/Level.h"
 #include "config/Config.h"
 #include "spdlog/spdlog.h"
+#include "../server/whitelist/Whitelist.h"
 
 void Loader::initHooks(void *handle) {
     auto patchOff = (unsigned int) hybris_dlsym(handle, "_ZN12AndroidStore21createGooglePlayStoreERKSsR13StoreListener");
@@ -124,6 +125,8 @@ void Loader::load(void *handle) {
 
     spdlog::info("Starting Pocket Dedicated Server v{0}", PDSVER);
     Config::read();
+    Whitelist::reloadFromFile();
+
     ServerNetworkHandler::serverMOTD = Config::getMOTD();
     initHooks(handle);
 
@@ -261,6 +264,9 @@ void Loader::handleCommand(const std::string &cmd) {
     if (cmd == "stop") {
         doOnStop();
         isShutdown = true;
+    } else if(cmd == "wl"){
+        Whitelist::reloadFromFile();
+        spdlog::info("Whitelist reloaded.");
     }
 }
 

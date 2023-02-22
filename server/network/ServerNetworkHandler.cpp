@@ -97,8 +97,8 @@ void ServerNetworkHandler::setMaxPlayers(int count) {
     updateServerAnnouncement();
 }
 
-void ServerNetworkHandler::updateServerAnnouncement() const {
-    serverLocator->announceServer(serverMOTD, serverCore, 0, 1, maxPlayersCount); //0 - game type
+void ServerNetworkHandler::updateServerAnnouncement() {
+    serverLocator->announceServer(serverMOTD, serverCore, 0, _getActivePlayerCount(), maxPlayersCount); //0 - game type
 }
 
 void ServerNetworkHandler::handleUseItemPacket(const NetworkIdentifier &ident, UseItemPacket &pk) {
@@ -145,6 +145,11 @@ void ServerNetworkHandler::handleLoginPacket(const NetworkIdentifier &ident, Log
     auto sa = serverPeer->GetSystemAddressFromGuid({ident.id});
     inet_ntop(AF_INET, &(sa.address.addr4.sin_addr), str, INET_ADDRSTRLEN);
 
+    for(auto& iph : Player::ipsHolder){
+        if(iph.second.first == str && iph.second.second == sa.debugPort){
+            return statics::minecraft->disconnectClient(ident, "double session");
+        }
+    }
     Player::ipsHolder.insert({ident.id, {str, sa.debugPort}});
 
     pk.req->verifySelfSigned();

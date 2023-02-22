@@ -16,10 +16,11 @@ void Config::read() {
         ss << fs.rdbuf();
         try {
             object = nlohmann::json::parse(ss);
+            return;
         } catch(...){
-            spdlog::error("Unable to load server config {0}/settings.json. Using default values", std::filesystem::current_path().string());
         }
     }
+    spdlog::error("Unable to load server config {0}/settings.json. Using default values", std::filesystem::current_path().string());
 }
 
 int Config::getServerPort() {

@@ -55,7 +55,7 @@ public:
     int _getActivePlayerCount();
     ServerPlayer* _getServerPlayer(const NetworkIdentifier& i);
     void setMaxPlayers(int count);
-    void updateServerAnnouncement() const;
+    void updateServerAnnouncement();
     void handleTextPacket(NetworkIdentifier const& ident, TextPacket& pk);
     void handleUseItemPacket(NetworkIdentifier const& ident, UseItemPacket& pk);
     void handleRemoveBlockPacket(NetworkIdentifier const& ident, RemoveBlockPacket& pk);
