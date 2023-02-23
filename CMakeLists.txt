@@ -124,7 +124,7 @@ set(SOURCE_FILES
         src/main.cpp
         src/common.cpp
         src/hook.cpp
-        serverRunner/appPlatform/LinuxAppPlatform.cpp serverGamemode/hotBar/HotBar.cpp serverGamemode/hotBar/HotBar.h)
+        serverRunner/appPlatform/LinuxAppPlatform.cpp serverGamemode/hotBar/HotBar.cpp serverGamemode/hotBar/HotBar.h serverGamemode/customPermissions/CustomPermissions.cpp serverGamemode/customPermissions/CustomPermissions.h)
 
 add_executable(pdserver ${LIBJSON_SOURCES} ${SPDLOG_SOURCES} ${HYBRIS_SOURCES} ${SOURCE_FILES})
 target_link_libraries(pdserver ${CMAKE_DL_LIBS} ${CMAKE_THREAD_LIBS_INIT} rt ${CMAKE_SOURCE_DIR}/thirdParty/leveldb/build/libleveldb.a uuid /usr/lib32/libcrypto.so /usr/lib32/libssl.so)

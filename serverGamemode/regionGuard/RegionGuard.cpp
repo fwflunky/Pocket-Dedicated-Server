@@ -14,6 +14,8 @@
 #include "../../server/statics.h"
 #include "../../server/level/Level.h"
 #include "../../server/level/BlockSource.h"
+#include "spdlog/spdlog.h"
+
 #define spath std::string(std::filesystem::current_path().string() + "/serverGamemode/storage/regionGuard/")
 Region *RegionGuard::getRegion(const std::string &nick) {
     std::scoped_lock<std::mutex> lock(mux);
@@ -126,7 +128,7 @@ void RegionGuard::loadAllUsers() {
                 rg->breweryAccess = breweryAccess == "1";
                 rg->boatPlaceOnWaterAllowed = boatPlaceOnWaterAllowed == "1";
                 playerRegions.insert({ownerName, rg});
-                std::cout << "loaded region " << pathsl[pathsl.size()-1] << "\n";
+                spdlog::debug("Loaded region {0}", pathsl[pathsl.size() - 1]);
             }
         }
         delete db;
@@ -181,7 +183,7 @@ void RegionGuard::scheduleAutoSave() {
 void RegionGuard::initCommands() {
     CustomCommands::registerCommand("rg pos", [&](ServerPlayer* player, nlohmann::json& input) -> bool {
         if (RegionGuard::getRegion(player->nickname)) {
-            player->sendMessage("У Вас уже есть регион.");
+            player->sendMessage("⋗ У Вас уже есть регион.");
             return true;
         }
         if (!RegionGuard::tempCreations.contains(player->nickname))
@@ -195,7 +197,7 @@ void RegionGuard::initCommands() {
     CustomCommands::registerCommand("rg flag", [&](ServerPlayer* player, nlohmann::json& input) -> bool {
         auto reg = RegionGuard::getRegion(player->nickname);
         if (!reg) {
-            player->sendMessage("У Вас нет региона.");
+            player->sendMessage("⋗ У Вас нет региона.");
             return true;
         }
 
@@ -214,34 +216,34 @@ void RegionGuard::initCommands() {
                 reg->arrowPickupAllowed = value;
                 reg->breweryAccess = value;
                 reg->boatPlaceOnWaterAllowed = value;
-                player->sendMessage("Все флаги установлены на " + (value ? std::string("разрешено") : "запрещено") + ".");
+                player->sendMessage("⋗ Все флаги установлены на " + (value ? std::string("разрешено") : "запрещено") + ".");
             } else if(flag == "pvp") {
                 reg->pvPAllowed = value;
-                player->sendMessage("pvPAllowed установлен на " + (value ? std::string("разрешено") : "запрещено") + ".");
+                player->sendMessage("⋗ Флаг pvPAllowed установлен на " + (value ? std::string("разрешено") : "запрещено") + ".");
             } else if(flag == "pve") {
                 reg->pvEAllowed = value;
-                player->sendMessage("pvEAllowed установлен на " + (value ? std::string("разрешено") : "запрещено") + ".");
+                player->sendMessage("⋗ Флаг pvEAllowed установлен на " + (value ? std::string("разрешено") : "запрещено") + ".");
             } else if(flag == "explodes") {
                 reg->explodesAllowed = value;
-                player->sendMessage("explodesAllowed установлен на " + (value ? std::string("разрешено") : "запрещено") + ".");
+                player->sendMessage("⋗ Флаг explodesAllowed установлен на " + (value ? std::string("разрешено") : "запрещено") + ".");
             } else if(flag == "echest") {
                 reg->enderChestAccess = value;
-                player->sendMessage("enderChestAccess установлен на " + (value ? std::string("разрешено") : "запрещено") + ".");
+                player->sendMessage("⋗ Флаг enderChestAccess установлен на " + (value ? std::string("разрешено") : "запрещено") + ".");
             } else if(flag == "chest") {
                 reg->chestAccess = value;
-                player->sendMessage("chestAccess установлен на " + (value ? std::string("разрешено") : "запрещено") + ".");
+                player->sendMessage("⋗ Флаг chestAccess установлен на " + (value ? std::string("разрешено") : "запрещено") + ".");
             } else if(flag == "furnace") {
                 reg->furnaceAccess = value;
-                player->sendMessage("furnaceAccess установлен на " + (value ? std::string("разрешено") : "запрещено") + ".");
+                player->sendMessage("⋗ Флаг furnaceAccess установлен на " + (value ? std::string("разрешено") : "запрещено") + ".");
             } else if(flag == "boatwater") {
                 reg->boatPlaceOnWaterAllowed = value;
-                player->sendMessage("boatPlaceOnWaterAllowed установлен на " + (value ? std::string("разрешено") : "запрещено") + ".");
+                player->sendMessage("⋗ Флаг boatPlaceOnWaterAllowed установлен на " + (value ? std::string("разрешено") : "запрещено") + ".");
             } else if(flag == "brewery") {
                 reg->breweryAccess = value;
-                player->sendMessage("breweryAccess установлен на " + (value ? std::string("разрешено") : "запрещено") + ".");
+                player->sendMessage("⋗ Флаг breweryAccess установлен на " + (value ? std::string("разрешено") : "запрещено") + ".");
             } else if(flag == "arrow") {
                 reg->arrowPickupAllowed = value;
-                player->sendMessage("arrowPickupAllowed установлен на " + (value ? std::string("разрешено") : "запрещено") + ".");
+                player->sendMessage("⋗ Флаг arrowPickupAllowed установлен на " + (value ? std::string("разрешено") : "запрещено") + ".");
             } else {
                 player->sendMessage("§cUnimplemented flag \"" + flag+"\"");
             }
@@ -256,18 +258,14 @@ void RegionGuard::initCommands() {
     CustomCommands::registerCommand("rg member", [&](ServerPlayer* player, nlohmann::json& input) -> bool {
         auto reg = RegionGuard::getRegion(player->nickname);
         if (!reg) {
-            player->sendMessage("У Вас нет региона.");
+            player->sendMessage("⋗ У Вас нет региона.");
             return true;
         }
 
         try {
             auto action = input["action"].get<std::string >();
-            if(!input.contains("value")){
-                player->sendMessage("Вы не указали игрока.");
-                return false;
-            }
             if (input["player"]["selector"].get<std::string>() != "nearestPlayer") {
-                player->sendMessage("Укажите конкретный ник игрока. Использовать обобщения может только оператор.");
+                player->sendMessage("⋗ Укажите конкретный ник игрока. Использовать обобщения может только оператор.");
                 return false;
             }
 
@@ -275,21 +273,21 @@ void RegionGuard::initCommands() {
 
             if(action == "del"){
                 if(!reg->isMember(targetNick)){
-                    player->sendMessage("Данный игрок не является участником региона");
+                    player->sendMessage("⋗ Данный игрок не является участником региона");
                     return false;
                 }
                 reg->delMember(targetNick);
-                player->sendMessage("Игрок " + targetNick + " был удален из региона.");
+                player->sendMessage("⋗ Игрок " + targetNick + " был удален из региона.");
                 return true;
             } else if(action == "add"){
                 if(reg->isMember(targetNick)){
-                    player->sendMessage("Данный игрок уже является участником региона");
+                    player->sendMessage("⋗ Данный игрок уже является участником региона");
                     return false;
                 }
                 if(reg->addMember(targetNick))
-                    player->sendMessage("Игрок " + targetNick + " был добавлен в регион.");
+                    player->sendMessage("⋗ Игрок " + targetNick + " был добавлен в регион.");
                 else
-                    player->sendMessage("Не удалось добавить игрока. Возможно превышен лимит участников региона.");
+                    player->sendMessage("⋗ Не удалось добавить игрока. Возможно, превышен лимит участников региона.");
                 return true;
             }
 
@@ -305,7 +303,7 @@ void RegionGuard::handleStage(ServerPlayer *player, RegionGuard::tempCreation& s
     if(stage.stage == 0){
         stage.start = {player->x, player->y - 2, player->z};
         stage.stage++;
-        player->sendMessage("Позиция §l#1§r установлена. Перейдите на позицию §l#2§r и напишите команду §l/rg pos§r еще раз.");
+        player->sendMessage("⋗ Позиция #1 установлена. Перейдите на позицию #2 и напишите команду /rg pos еще раз.");
 
         UpdateBlockPacket packet;
         packet.x = std::floor(stage.start.x);
@@ -319,12 +317,12 @@ void RegionGuard::handleStage(ServerPlayer *player, RegionGuard::tempCreation& s
         stage.end = {player->x, player->y - 2, player->z};
 
         AABB fblock({stage.start.x, stage.start.y, stage.start.z}, {stage.start.x + 1, stage.start.y + 1, stage.start.z + 1});
-        if(std::abs(fblock.distanceTo({{stage.end.x, stage.end.y, stage.end.z}, {stage.end.x + 1, stage.end.y + 1, stage.end.z + 1}})) > 30) {
-            player->sendMessage("Выбрана слишком большая территория. Допускается местность не больше §l30 блоков§r. Попробуйте еще раз написать команду §l/rg pos§r, но уже выбрав местность меньше.");
-           return player->sendMessage("Начинайте со §lвторой точки, §rпервая точка §lне была сброшена.");
+        if(std::abs(fblock.distanceTo({{stage.end.x, stage.end.y, stage.end.z}, {stage.end.x + 1, stage.end.y + 1, stage.end.z + 1}})) > 40) {
+            player->sendMessage("⋗ Выбрана слишком большая территория. Допускается местность не больше 40 блоков. Попробуйте еще раз написать команду /rg pos, но уже выбрав местность меньше.");
+           return player->sendMessage("⋗ Начинайте со второй точки, первая точка не была сброшена.");
         } else if(std::abs(fblock.distanceTo({{stage.end.x, stage.end.y, stage.end.z}, {stage.end.x + 1, stage.end.y + 1, stage.end.z + 1}})) < 3) {
-            player->sendMessage("Выбрана слишком маленькая территория. Допускается местность не больше §l30 блоков§r. Попробуйте еще раз написать команду §l/rg pos§r, но уже выбрав местность больше.");
-            return player->sendMessage("Начинайте со §lвторой точки, §rпервая точка §lне была сброшена.");
+            player->sendMessage("⋗ Выбрана слишком маленькая территория. Допускается местность не меньше 3 блоков. Попробуйте еще раз написать команду /rg pos, но уже выбрав местность больше.");
+            return player->sendMessage("⋗ Начинайте со второй точки, первая точка не была сброшена");
         }
 
         //todo threaded
@@ -333,16 +331,16 @@ void RegionGuard::handleStage(ServerPlayer *player, RegionGuard::tempCreation& s
             std::scoped_lock<std::mutex> lock(mux);
             for (const auto &reg: playerRegions) {
                 if (reg.second->box.intersects(aabb)) {
-                    player->sendMessage("Выбранная территория пересекает территорию \"" + reg.second->regionName + "\"");
+                    player->sendMessage("⋗ Выбранная территория пересекает территорию \"" + reg.second->regionName + "\"");
                     stage.stage = 0;
-                    return player->sendMessage("Прогресс сброшен. Начните снова");
+                    return player->sendMessage("⋗ Прогресс сброшен. Начните снова");
                 }
             }
         }
 
         RegionGuard::makeRegion(player->nickname, stage.name, aabb, player->getDimension()->dimensionId);
 
-        player->sendMessage("Позиция §l#2§r установлена. §lРегион создан§r, отмечаю его в мире...");
+        player->sendMessage("⋗ Позиция #2 установлена. Регион создан и отмечен в мире");
         UpdateBlockPacket packet;
         packet.x = std::floor(stage.end.x);
         packet.y = std::floor(stage.end.y);
@@ -421,7 +419,7 @@ bool RegionGuard::handleUseItem(ServerPlayer *player, UseItemPacket &pk) {
             return true;
 
 
-        player->sendPopup("§bДанная местность §fзапривачена §bигроком §f" + reg->regionOwnerName);
+        player->sendPopup("Данная местность запривачена игроком " + reg->regionOwnerName);
 
         player->sendInventory();
 
@@ -449,10 +447,10 @@ bool RegionGuard::handleUseItem(ServerPlayer *player, UseItemPacket &pk) {
 bool RegionGuard::handleRemoveBlock(ServerPlayer *player, RemoveBlockPacket &pk) {
     auto reg = RegionGuard::getRegionWhereVec(player->getDimension()->dimensionId, {(float) pk.x, (float) pk.y, (float) pk.z});
     if (reg && (!reg->isOwner(player->nickname) && !reg->isMember(player->nickname))) {
-        player->sendPopup("§bДанная местность §fзапривачена §bигроком §f" + reg->regionOwnerName);
+        player->sendPopup("Данная местность §fзапривачена игроком " + reg->regionOwnerName);
         if (player->getHealth() > 15) {
             player->burn(1, true);
-            player->sendMessage("<§l§bAtmosphere§f'PE§r> §bПерестань трогать §fчужую местность");
+            player->sendMessage("⋗ Перестань трогать чужую местность");
         }
 
         player->sendInventory();
@@ -482,7 +480,7 @@ bool RegionGuard::handleRemoveBlock(ServerPlayer *player, RemoveBlockPacket &pk)
 bool RegionGuard::handleArrowPickup(ServerPlayer *player, Entity* arrow) {
     auto reg = RegionGuard::getRegionWhereVec(player->getDimension()->dimensionId, {(float) arrow->x, (float) arrow->y, (float) arrow->z});
     if (reg && (!reg->isOwner(player->nickname) && !reg->isMember(player->nickname) && !reg->arrowPickupAllowed)) {
-        player->sendPopup("§bПоднимать стрелы в регионе §fзапрещено");
+        player->sendPopup("Поднимать стрелы в регионе запрещено");
         for (int i = 0; i <= 5; i++) {
             Vec3 np = {(float) arrow->x, (float) arrow->y, (float) arrow->z};
             np.x -= (i * 0.07);
@@ -532,14 +530,14 @@ bool RegionGuard::handlePlayerHurted(ServerPlayer *player, const EntityDamageSou
                     player->getLevel()->addParticleCustom(17, 0, np);
                 }
                 if (damagerIsWolf && damageSource.damager->isTame()) {
-                    player->sendMessage("Вас пытается атаковать прирученный волк, отойдите от него");
+                    player->sendMessage("⋗ Вас пытается атаковать прирученный волк, отойдите от него");
                     damageSource.damager->setTarget(nullptr);
                 } else {
                     damageSource.damager->remove();
                 }
                 return false;
             } else if (!reg->pvPAllowed && damagerIsPlayer) {
-                ((ServerPlayer*) damageSource.damager)->sendPopup("§bPVP в регионе §fзапрещено");
+                ((ServerPlayer*) damageSource.damager)->sendPopup("PVP в регионе запрещено");
                 return false;
             }
         }

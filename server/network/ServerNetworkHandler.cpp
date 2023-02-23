@@ -189,6 +189,7 @@ void ServerNetworkHandler::customDisconnectHandler(ServerPlayer* sp, const std::
         spdlog::info("Player {0} successfully disconnected with reason: {1}", nick, reason);
         statics::runOnNextTick([&]() {
             statics::serverNetworkHandler->mainLevel->forceFlushRemovedPlayers();
+            statics::serverNetworkHandler->updateServerAnnouncement();
         });
     }).detach();
 }

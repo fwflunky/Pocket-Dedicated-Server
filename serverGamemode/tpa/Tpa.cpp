@@ -21,12 +21,12 @@ void Tpa::init() {
 
         for (auto &reqs: issues) {
             if (reqs.issuerNick == myNick) {
-                player->sendMessage("Вы ожидаете ответа на запрос от игрока " + reqs.receiverNick + ". Запрос истечет сам через минуту или Вы можете отменить его самостоятельно написав команду /tpa cancel");
-                player->sendMessage("Только после этого шага Вы сможете телепортироваться к другому игроку.");
+                player->sendMessage("⋗ Вы ожидаете ответа на запрос от игрока " + reqs.receiverNick + ". Запрос истечет сам через минуту или Вы можете отменить его самостоятельно написав команду /tpa cancel");
+                player->sendMessage("⋗ Только после этого шага Вы сможете телепортироваться к другому игроку.");
                 return true;
             } else if(reqs.receiverNick == myNick) {
-                player->sendMessage("Игрок " + reqs.issuerNick + " ожидает ответа от Вас на телепортацию, для принятия напишите команду /tpa accept. Запрос истечет сам через минуту или Вы можете отменить его самостоятельно написав команду /tpa cancel");
-                player->sendMessage("Только после этого шага Вы сможете телепортироваться к другому игроку.");
+                player->sendMessage("⋗ Игрок " + reqs.issuerNick + " ожидает ответа от Вас на телепортацию, для принятия напишите команду /tpa accept. Запрос истечет сам через минуту или Вы можете отменить его самостоятельно написав команду /tpa cancel");
+                player->sendMessage("⋗ Только после этого шага Вы сможете телепортироваться к другому игроку.");
                 return true;
             }
         }
@@ -36,12 +36,12 @@ void Tpa::init() {
             std::transform(nick.begin(), nick.end(), nick.begin(),
                            [](unsigned char c) { return std::tolower(c); });
             if (input["player"]["selector"].get<std::string>() != "nearestPlayer") {
-                player->sendMessage("Укажите конкретный ник игрока. Использовать обобщения может только оператор.");
+                player->sendMessage("⋗ Укажите конкретный ник игрока. Использовать обобщения может только оператор.");
                 return false;
             }
 
             if(myNick == nick){
-                player->sendMessage("Нельзя делать самоотсос.");
+                player->sendMessage("⋗ Нельзя делать самоотсос.");
                 return false;
             }
             Player *receiver = nullptr;
@@ -56,7 +56,7 @@ void Tpa::init() {
                 }
             }
             if (!receiver) {
-                player->sendMessage("Указанный игрок не в сети.");
+                player->sendMessage("⋗ Указанный игрок не в сети.");
                 return true;
             }
 
@@ -66,9 +66,9 @@ void Tpa::init() {
                 .requestValidTill = time(nullptr) + 60
             });
 
-            player->sendMessage("Запрос на телепортацию отправлен игроку " + receiver->nickname);
-            receiver->sendMessage("Игрок " + player->nickname + " отправил Вам запрос на телепортацию.");
-            receiver->sendMessage("Вы можете принять запрос от игрока " + player->nickname + " написав команду /tpa accept");
+            player->sendMessage("⋗ Запрос на телепортацию отправлен игроку " + receiver->nickname);
+            receiver->sendMessage("⋗ Игрок " + player->nickname + " отправил Вам запрос на телепортацию.");
+            receiver->sendMessage("⋗ Вы можете принять запрос от игрока " + player->nickname + " написав команду /tpa accept");
             return true;
         } catch (...) {
             player->sendMessageTranslated("§c%commands.generic.exception", {});
@@ -101,13 +101,13 @@ void Tpa::init() {
         }
 
         if (!issuer) {
-            player->sendMessage("Вам не поступали запросы на телепортацию, либо старые уже истекли. Возможно, игрок отправивший Вам запрос вышел с сервера.");
+            player->sendMessage("⋗ Вам не поступали запросы на телепортацию, либо старые уже истекли. Возможно, игрок отправивший Вам запрос вышел с сервера.");
             return true;
         }
         issues.erase(issues.begin() + index);
         if(player->getDimension()->dimensionId != issuer->getDimension()->dimensionId){
-            player->sendMessage("Невозможно принять запрос. Игрок находится в другом мире.");
-            issuer->sendMessage("Игрок " + player->nickname + " хотел принять Ваш запрос на телепортацию, но он находится в другом мире.");
+            player->sendMessage("⋗ Невозможно принять запрос. Игрок находится в другом мире.");
+            issuer->sendMessage("⋗ Игрок " + player->nickname + " хотел принять Ваш запрос на телепортацию, но он находится в другом мире.");
             return true;
         }
 
@@ -122,8 +122,8 @@ void Tpa::init() {
         mpk.entityRuntimeId2 = 0;
 
         statics::serverNetworkHandler->networkHandler->send(issuer->identifier, mpk);
-        player->sendMessage("Запрос принят. К Вам телепортировался игрок " + issuer->nickname);
-        issuer->sendMessage("Игрок " + player->nickname + " принял Ваш запрос на телепортацию.");
+        player->sendMessage("⋗ Запрос принят. К Вам телепортировался игрок " + issuer->nickname);
+        issuer->sendMessage("⋗ Игрок " + player->nickname + " принял Ваш запрос на телепортацию.");
         return true;
     });
 
@@ -145,7 +145,7 @@ void Tpa::init() {
                     std::transform(unick.begin(), unick.end(), unick.begin(),
                                    [](unsigned char c) { return std::tolower(c); });
                     if (unick == reqs.issuerNick) {
-                        user->sendMessage("Игрок " + player->nickname + " отклонил Ваш запрос на телепортацию.");
+                        user->sendMessage("⋗ Игрок " + player->nickname + " отклонил Ваш запрос на телепортацию.");
                         break;
                     }
                 }
@@ -157,7 +157,7 @@ void Tpa::init() {
         }
 
         if(!found.empty() || globalFound) {
-            player->sendMessage("Отклонен запрос на телепортацию от игрока " + found);
+            player->sendMessage("⋗ Отклонен запрос на телепортацию от игрока " + found);
             issues.erase(issues.begin() + index);
         }
         index = 0;
@@ -172,12 +172,12 @@ void Tpa::init() {
             index++;
         }
         if(!found.empty()) {
-            player->sendMessage("Отменен запрос на телепортацию к игроку " + found);
+            player->sendMessage("⋗ Отменен запрос на телепортацию к игроку " + found);
             issues.erase(issues.begin() + index);
         }
 
         if(!globalFound){
-            player->sendMessage("Запросы подлежащие отмене не найдены.");
+            player->sendMessage("⋗ Запросы подлежащие отмене не найдены.");
         }
         return true;
     });
@@ -200,10 +200,10 @@ void Tpa::startTimerThread() {
                                                [](unsigned char c) { return std::tolower(c); });
                                 int c = 0;
                                 if (unick == reqs.issuerNick) {
-                                    user->sendMessage("Запрос на телепортацию к игроку " + reqs.receiverNick + " истек.");
+                                    user->sendMessage("⋗ Запрос на телепортацию к игроку " + reqs.receiverNick + " истек.");
                                     c++;
                                 } else if(unick == reqs.receiverNick){
-                                    user->sendMessage("Запрос на телепортацию от игрока " + reqs.issuerNick + " истек.");
+                                    user->sendMessage("⋗ Запрос на телепортацию от игрока " + reqs.issuerNick + " истек.");
                                     c++;
                                 }
                                 if(c == 2)

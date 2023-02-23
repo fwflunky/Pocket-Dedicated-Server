@@ -16,19 +16,6 @@
 #include "../customCommands/CustomCommands.h"
 
 void SpawnColors::initThreads() {
-    std::thread([]() {
-        sleep(5);
-        /*while (true) {
-            //  sleep(1);
-            float x = spawnPos.x + 0.5;
-            float y = spawnPos.y;
-            float z = spawnPos.z + 0.5;
-            statics::runOnNextTick([x, y, z]() {
-                statics::serverNetworkHandler->mainLevel->addParticleCustom(31, 0, {x, y, z}); //change with dimanesion sendBroadcast leveleventpacket
-            });
-
-        }*/
-    }).detach();
     CustomCommands::registerCommand("spawn", [&](ServerPlayer *player, nlohmann::json &input) -> bool {
         toSpawn(player);
         return true;
@@ -43,7 +30,7 @@ void SpawnColors::initThreads() {
         try {
             int type = (input["type"].get<std::string >() == "c") ? 1 : 0;
             player->setPlayerGameType(type);
-            player->sendMessage("Игровой режим изменен");
+            player->sendMessage("⋗ Игровой режим изменен");
         } catch(...){
             player->sendMessageTranslated("§c%commands.generic.exception", {});
             return true;
@@ -52,65 +39,18 @@ void SpawnColors::initThreads() {
     });
 }
 
-void SpawnColors::loadBlocks() {
-    std::string in;
-    leveldb::DB *db;
-    leveldb::Options options;
-    options.create_if_missing = true;
-    std::scoped_lock<std::mutex> lock(mux);
-
-    leveldb::Status status = leveldb::DB::Open(options, scpath + "blocks", &db);
-    if (status.ok())
-        db->Get(leveldb::ReadOptions(), "blocks", &in);
-    delete db;
-
-    auto datas = in | ranges::views::split('|') | ranges::to<std::vector<std::string>>();
-    for (auto &spos: datas) {
-        auto xyz = spos | ranges::views::split(';') | ranges::to<std::vector<std::string>>();
-        woolBlocks.emplace_back(std::stoi(xyz[0]), std::stoi(xyz[1]), std::stoi(xyz[2]));
-    }
-    std::cout << " SpawnColors: loaded " << woolBlocks.size() << " wool blocks\n";
-}
-
-void SpawnColors::saveBlocks() {
-    std::string out;
-    for (auto &bp: woolBlocks) {
-        out += std::to_string(bp.x) + ";" + std::to_string(bp.y) + ";" + std::to_string(bp.z) + "|";
-    }
-    leveldb::DB *db;
-    leveldb::Options options;
-    options.create_if_missing = true;
-    std::scoped_lock<std::mutex> lock(mux);
-
-    leveldb::Status status = leveldb::DB::Open(options, scpath + "blocks", &db);
-    if (status.ok())
-        db->Put(leveldb::WriteOptions(), "blocks", out);
-    delete db;
-
-    std::cout << " SpawnColors: saved " << woolBlocks.size() << " wool blocks\n";
-}
-
-void SpawnColors::scheduleAutoSave() {
-    std::thread([]() {
-        while (true) {
-            sleep(1);
-            SpawnColors::saveBlocks();
-        }
-    }).detach();
-}
-
 bool SpawnColors::tryRTP(ServerPlayer *p) {
     std::scoped_lock<std::mutex> lock(mux);
 
     if (p->getDimension()->dimensionId != 0) {
-        p->sendMessage("<§l§bAtmosphere§f'PE§r> §bДля §fсовершения телепортации §bнужно находиться в §fобычном мире...");
+        p->sendMessage("⋗ Для совершения телепортации нужно находиться в обычном мире");
         return false;
     } else if (rtpPrepares.contains(p->nickname)) {
-        p->sendMessage("<§l§bAtmosphere§f'PE§r> §bПоиск §fточки телепортации §bуже начат, §fподождите...");
+        p->sendMessage("⋗ Поиск точки телепортации уже начат, подождите");
         return false;
     }
 
-    p->sendMessage("<§l§bAtmosphere§f'PE§r> §bПоиск точки телепортации, §fподождите...");
+    p->sendMessage("⋗ Поиск точки телепортации, подождите");
     rtpPrepares.insert(p->nickname);
 
     std::thread([p, nick = p->nickname]() {
@@ -125,7 +65,7 @@ bool SpawnColors::tryRTP(ServerPlayer *p) {
             statics::runOnNextTick([spos, &result]() {
                 result = statics::serverNetworkHandler->mainLevel->getDimension(0)->getChunkSource()->getOrLoadChunk(ChunkPos({spos.x, spos.y, spos.z}), 1);
             });
-            usleep(100 * 500);
+            usleep(1000 * 500);
         }
         if (!result) {
             //failed
@@ -133,7 +73,7 @@ bool SpawnColors::tryRTP(ServerPlayer *p) {
             return statics::runOnNextTick([p]() {
                 if (!p)
                     return;
-                p->sendMessage("<§l§bAtmosphere§f'PE§r> §bНе удалось найти §fточку телепортации§b. Попробуйте §fещё раз (1)");
+                p->sendMessage("⋗ Не удалось найти точку телепортации. Попробуйте ещё раз (1)");
             });
         }
         //todo check for load failed
@@ -151,7 +91,7 @@ bool SpawnColors::tryRTP(ServerPlayer *p) {
             return statics::runOnNextTick([p]() {
                 if (!p)
                     return;
-                p->sendMessage("<§l§bAtmosphere§f'PE§r> §bНе удалось найти §fточку телепортации§b. Попробуйте §fещё раз");
+                p->sendMessage("⋗ Не удалось найти точку телепортации. Попробуйте ещё раз");
             });
         }
         spos.y = (float) floorY + 2;
@@ -190,7 +130,7 @@ bool SpawnColors::tryRTP(ServerPlayer *p) {
                 return;
             p->teleportTo(spos, 0, 0);
             statics::serverNetworkHandler->networkHandler->send(p->identifier, mpk);
-            p->sendMessage("<§l§bAtmosphere§f'PE§r> §bТелепортирован на §fточку случайной телепортации");
+            p->sendMessage("⋗ Телепортирован на точку случайной телепортации");
         });
     }).detach();
     return true;
@@ -200,14 +140,14 @@ bool SpawnColors::toSpawn(ServerPlayer *p) {
     std::scoped_lock<std::mutex> lock(mux);
 
     if (p->getDimension()->dimensionId != 0) {
-        p->sendMessage("<§l§bAtmosphere§f'PE§r> §bДля §fсовершения телепортации §bнужно находиться в §fобычном мире...");
+        p->sendMessage("⋗ Для совершения телепортации нужно находиться в обычном мире");
         return false;
     } else if (spawnPrepares.contains(p->nickname)) {
-        p->sendMessage("<§l§bAtmosphere§f'PE§r> §bЗагрузка §fточки спавна §bуже начата, §fподождите...");
+        p->sendMessage("⋗ Загрузка точки спавна уже начата, подождите");
         return false;
     }
 
-    p->sendMessage("<§l§bAtmosphere§f'PE§r> §bЗагрузка точки спавна, §fподождите...");
+    p->sendMessage("⋗ Загрузка точки спавна, подождите");
     spawnPrepares.insert(p->nickname);
 
     std::thread([p]() {
@@ -233,14 +173,14 @@ bool SpawnColors::toSpawn(ServerPlayer *p) {
                     return;
                 result = statics::serverNetworkHandler->mainLevel->getDimension(0)->getChunkSource()->getOrLoadChunk(ChunkPos({spos.x, spos.y, spos.z}), 1);
             });
-            usleep(100 * 500);
+            usleep(1000 * 500);
         }
         if (!result) {
             //failed
             return statics::runOnNextTick([p]() {
                 if (!p)
                     return;
-                p->sendMessage("<§l§bAtmosphere§f'PE§r> §bНе удалось загрузить §fточку спавна§b. Попробуйте §fещё раз (1)");
+                p->sendMessage("⋗ Не удалось загрузить точку спавна. Попробуйте ещё раз (1)");
             });
         }
         //todo check for load failed
@@ -265,7 +205,7 @@ bool SpawnColors::toSpawn(ServerPlayer *p) {
                 return;
             p->teleportTo(spos, 0, 0);
             statics::serverNetworkHandler->networkHandler->send(p->identifier, mpk);
-            p->sendMessage("<§l§bAtmosphere§f'PE§r> §bТелепортирован на §fточку спавна");
+            p->sendMessage("⋗ Телепортирован на точку спавна");
             spawnPrepares.erase(p->nickname);
         });
     }).detach();

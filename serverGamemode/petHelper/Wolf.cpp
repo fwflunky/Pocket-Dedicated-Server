@@ -45,7 +45,7 @@ namespace PetHelper {
                     return false;
                 } else if (wolf->getDimension() != owner->getDimension() || wolf->distanceTo(*owner) > 30) { //todo change wolf dimension
                     if(cause == 7) { //don't spam
-                        owner->sendMessage("Ваш волк горит, но вы находитесь далеко от него. Ему выдан эффект защиты от горения на минуту.");
+                        owner->sendMessage("⋗ Ваш волк горит, но вы находитесь далеко от него. Ему выдан эффект защиты от горения на минуту.");
                         ((Mob*) wolf)->addEffect({12, 20*60, 1});
                     }
                     return false;

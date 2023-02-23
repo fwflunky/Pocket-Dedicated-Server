@@ -35,6 +35,8 @@
 #include "config/Config.h"
 #include "spdlog/spdlog.h"
 #include "../server/whitelist/Whitelist.h"
+#include "../serverGamemode/customPermissions/CustomPermissions.h"
+#include "../thirdParty/hybris/src/jb/linker.h"
 
 void Loader::initHooks(void *handle) {
     auto patchOff = (unsigned int) hybris_dlsym(handle, "_ZN12AndroidStore21createGooglePlayStoreERKSsR13StoreListener");
@@ -115,6 +117,12 @@ void Loader::initHooks(void *handle) {
 
     Scheduler::singleton = (Scheduler *(*)()) hybris_dlsym(handle, "_ZN9Scheduler9singletonEv");
     Scheduler::Scheduler_processCoroutines = (void (*)(Scheduler *, double)) hybris_dlsym(handle, "_ZN9Scheduler17processCoroutinesEd");
+
+
+    //hookFunction((void *) hybris_dlsym(handle, "_Z30StringToCommandPermissionLevelRKSs"), (void *) &CustomPermissions::StringToCommandPermissionLevel, (void **) &CustomPermissions::StringToCommandPermissionLevel_orig);
+    //Dl_info dl_info;
+    //hybris_dladdr((const void*) ((((soinfo *) handle)->base - 65536) + 0x02efcf54), &dl_info);
+    //std::cout << dl_info.dli_fbase<< "\n";
 }
 
 void Loader::load(void *handle) {
@@ -194,7 +202,7 @@ void Loader::load(void *handle) {
 
     spdlog::info("Starting server...");
     spdlog::debug("Server port: {0}", Config::getServerPort());
-    instance = new ServerInstance(minecraftApp, wl, ops, &filePathManager, std::chrono::duration_cast<std::chrono::duration<long long>>(std::chrono::seconds(10)), Config::getWorldLevelId(), Config::getWorldLevelName(), "motd", "", "sdsd", settings, api, 8, true, Config::getServerPort(), Config::getServerPort(), Config::getMaxOnline(), false, {}, "normal", false, *mce::UUID::EMPTY, eventing, resourcePackRepo, resourcePackManager, &resourcePackManager);
+    instance = new ServerInstance(minecraftApp, wl, ops, &filePathManager, std::chrono::duration_cast<std::chrono::duration<long long>>(std::chrono::seconds(40)), Config::getWorldLevelId(), Config::getWorldLevelName(), "motd", "", "sdsd", settings, api, 8, true, Config::getServerPort(), Config::getServerPort(), Config::getMaxOnline(), false, {}, "normal", false, *mce::UUID::EMPTY, eventing, resourcePackRepo, resourcePackManager, &resourcePackManager);
     spdlog::info("Server started successfully");
     statics::serverNetworkHandler = instance->minecraft->getServerNetworkHandler();
     statics::minecraft = instance->minecraft;
