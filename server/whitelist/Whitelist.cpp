@@ -20,7 +20,7 @@ bool Whitelist::isAllowed(void *uuid, const std::string &nick) {
 }
 
 bool Whitelist::byNickIsAllowed(const std::string &nick) {
-    return allowedPlayers.contains(nick);
+    return !enabled || allowedPlayers.contains(nick);
 }
 
 void Whitelist::reloadFromFile() {
@@ -29,7 +29,9 @@ void Whitelist::reloadFromFile() {
         std::stringstream ss;
         ss << fs.rdbuf();
         try {
-            allowedPlayers = nlohmann::json::parse(ss).get<std::set<std::string>>();
+            auto obj = nlohmann::json::parse(ss);
+            enabled = obj["enabled"].get<bool>();
+            allowedPlayers = obj["entries"].get<std::set<std::string>>();
             return;
         } catch(...){
         }

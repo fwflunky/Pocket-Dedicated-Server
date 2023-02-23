@@ -152,6 +152,7 @@ void ServerNetworkHandler::handleLoginPacket(const NetworkIdentifier &ident, Log
     }
     Player::ipsHolder.insert({ident.id, {str, sa.debugPort}});
 
+
     pk.req->verifySelfSigned();
     if (LoginChecks::checkOnLogin(&pk, ident))
         ServerNetworkHandler_handle_LoginPacket(this, ident, pk);
@@ -162,6 +163,7 @@ void ServerNetworkHandler::onDisconnect(const NetworkIdentifier &identifier, con
     if (sp != nullptr && Player::ipsHolder.contains(identifier.id)) { //fix for multiple disconnect messages, IDK why
         LoginChecks::checkOnDisconnect(identifier, reason);
         Player::ipsHolder.erase(identifier.id);
+        Player::lowerNickHolder.erase(identifier.id);
         ((void (*)(LevelStorage *, Player &)) statics::serverNetworkHandler->mainLevel->levelStorage->vtable[15])(statics::serverNetworkHandler->mainLevel->levelStorage, *sp); //DBStorage::save
         customDisconnectHandler(sp, reason, hide);
     }

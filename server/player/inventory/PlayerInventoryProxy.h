@@ -17,6 +17,7 @@ class PlayerInventoryProxy {
 public:
     static void initHooks(void* handle);
     static inline void (*PlayerInventoryProxy_add)(PlayerInventoryProxy*, ItemInstance&, bool) = nullptr;
+    static inline bool (*PlayerInventoryProxy_canAdd)(PlayerInventoryProxy*, const ItemInstance&) = nullptr;
     static inline int (*PlayerInventoryProxy__getCurrentSlotCount)(PlayerInventoryProxy*) = nullptr;
     static inline bool (*PlayerInventoryProxy_getAndRemoveResource)(PlayerInventoryProxy*, ItemInstance&, bool) = nullptr;
     static inline void (*PlayerInventoryProxy_removeItem)(PlayerInventoryProxy*, int, int, int) = nullptr;
@@ -29,6 +30,7 @@ public:
     char filler1[48];
     std::unique_ptr<Inventory> inventory;
     void add(ItemInstance& i, bool b);
+    bool canAdd(const ItemInstance& i);
     int _getCurrentSlotCount();
     bool getAndRemoveResource(ItemInstance&, bool);
     void removeItem(int, int, int);

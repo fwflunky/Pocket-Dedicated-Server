@@ -9,6 +9,7 @@
 
 void PlayerInventoryProxy::initHooks(void *handle) {
     PlayerInventoryProxy_add = (void (*)(PlayerInventoryProxy *, ItemInstance&, bool)) hybris_dlsym(handle, "_ZN20PlayerInventoryProxy3addER12ItemInstanceb");
+    PlayerInventoryProxy_canAdd = (bool (*)(PlayerInventoryProxy *, const ItemInstance&)) hybris_dlsym(handle, "_ZNK20PlayerInventoryProxy6canAddERK12ItemInstance");
     PlayerInventoryProxy__getCurrentSlotCount = (int (*)(PlayerInventoryProxy *)) hybris_dlsym(handle, "_ZN20PlayerInventoryProxy20_getCurrentSlotCountEv");
     PlayerInventoryProxy_getAndRemoveResource = (bool (*)(PlayerInventoryProxy *, ItemInstance &, bool)) hybris_dlsym(handle, "_ZN20PlayerInventoryProxy20getAndRemoveResourceER12ItemInstanceb");
     PlayerInventoryProxy_getSlots = (std::vector<ItemInstance*> (*)(PlayerInventoryProxy *)) hybris_dlsym(handle, "_ZNK20PlayerInventoryProxy8getSlotsEv");
@@ -20,6 +21,10 @@ void PlayerInventoryProxy::initHooks(void *handle) {
 
 void PlayerInventoryProxy::add(ItemInstance &i, bool b) {
     PlayerInventoryProxy_add(this, i, b);
+}
+
+bool PlayerInventoryProxy::canAdd(const ItemInstance &i) {
+    return PlayerInventoryProxy_canAdd(this, i);
 }
 
 int PlayerInventoryProxy::_getCurrentSlotCount() {

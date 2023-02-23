@@ -116,6 +116,9 @@ int main(int argc, char *argv[]) {
     //unsigned int libBase = ((soinfo *) handle)->base;
     //std::cout << "loaded MCPE (at " << libBase << ")\n";
 
+    for(auto& fn : Loader::callOnLoad){
+        fn(handle);
+    }
     NetworkIdentifier::initHooks(handle);
     ServerNetworkHandler::initHooks(handle);
     Entity::initHooks(handle);

@@ -21,6 +21,7 @@ set(LIBJSON_SOURCES thirdParty/jsoncpp-1.8.1/src/lib_json/json_reader.cpp thirdP
 set(SPDLOG_SOURCES thirdParty/spdlog-1.x/src/async.cpp thirdParty/spdlog-1.x/src/bundled_fmtlib_format.cpp thirdParty/spdlog-1.x/src/cfg.cpp thirdParty/spdlog-1.x/src/color_sinks.cpp thirdParty/spdlog-1.x/src/file_sinks.cpp thirdParty/spdlog-1.x/src/spdlog.cpp thirdParty/spdlog-1.x/src/stdout_sinks.cpp)
 
 set(SOURCE_FILES
+        serverGamemode/freeBoat/FreeBoat.cpp
         server/util/storage/DBStorage.cpp
         server/util/storage/LevelStorage.cpp
         server/entity/classes/Wolf.cpp
@@ -124,7 +125,7 @@ set(SOURCE_FILES
         src/main.cpp
         src/common.cpp
         src/hook.cpp
-        serverRunner/appPlatform/LinuxAppPlatform.cpp serverGamemode/hotBar/HotBar.cpp serverGamemode/hotBar/HotBar.h serverGamemode/customPermissions/CustomPermissions.cpp serverGamemode/customPermissions/CustomPermissions.h)
+        serverRunner/appPlatform/LinuxAppPlatform.cpp serverGamemode/hotBar/HotBar.cpp serverGamemode/hotBar/HotBar.h serverGamemode/customPermissions/CustomPermissions.cpp serverGamemode/customPermissions/CustomPermissions.h serverGamemode/clearLag/ClearLag.cpp serverGamemode/clearLag/ClearLag.h server/level/chunk/MainChunkSource.cpp server/level/chunk/MainChunkSource.h)
 
 add_executable(pdserver ${LIBJSON_SOURCES} ${SPDLOG_SOURCES} ${HYBRIS_SOURCES} ${SOURCE_FILES})
 target_link_libraries(pdserver ${CMAKE_DL_LIBS} ${CMAKE_THREAD_LIBS_INIT} rt ${CMAKE_SOURCE_DIR}/thirdParty/leveldb/build/libleveldb.a uuid /usr/lib32/libcrypto.so /usr/lib32/libssl.so)

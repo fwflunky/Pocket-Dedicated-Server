@@ -20,6 +20,7 @@ class Player : public Mob {
 public:
     static void initHooks(void* handle);
     static inline std::unordered_map<unsigned long long, std::pair<std::string, int>> ipsHolder;
+    static inline std::unordered_map<unsigned long long, std::string> lowerNickHolder;
 
     static inline void (*Player_addItem)(Player*, ItemInstance&) = nullptr;
     static inline void (*Player_sendInventory)(Player*) = nullptr;
@@ -71,6 +72,7 @@ public:
     void take(Entity& e, int i);
     void remove();
     std::pair<std::string, unsigned short> getFuckingIpPortWithAccessToFuckingRakNetBruh();
+    std::string getLowerName() const;
 };
 
 

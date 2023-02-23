@@ -12,3 +12,7 @@ void ChunkPos::initHooks(void *handle) {
 ChunkPos::ChunkPos(const BlockPos &p) {
     ChunkPos_ctor(this, p);
 }
+
+bool ChunkPos::operator==(const ChunkPos &p) const {
+    return x == p.x && z == p.z;
+}

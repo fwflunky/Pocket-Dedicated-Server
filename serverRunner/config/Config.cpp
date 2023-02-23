@@ -94,3 +94,11 @@ std::string Config::getWorldLevelId() {
         return "No_config_loaded";
     }
 }
+
+bool Config::debugEnabled() {
+    try {
+        return object["core"]["debug"].get<bool>();
+    } catch (...){
+        return false;
+    }
+}

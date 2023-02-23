@@ -32,6 +32,7 @@
 #include "minecraftGame/Minecraft.h"
 #include "../server/statics.h"
 #include "../server/level/Level.h"
+#include "../server/level/chunk/LevelChunk.h"
 #include "config/Config.h"
 #include "spdlog/spdlog.h"
 #include "../server/whitelist/Whitelist.h"
@@ -128,12 +129,14 @@ void Loader::initHooks(void *handle) {
 void Loader::load(void *handle) {
     auto timeAtLoadEntry = std::chrono::system_clock::now();
 
-    spdlog::set_level(spdlog::level::debug);
     spdlog::set_pattern("[\033[1;34m%H:%M:%S\033[0m] [%^%l%$] [\033[1;4m\033[1;34mPDS\033[1;24m\033[0m] %v");
 
     spdlog::info("Starting Pocket Dedicated Server v{0}", PDSVER);
     Config::read();
     Whitelist::reloadFromFile();
+
+    if(Config::debugEnabled())
+        spdlog::set_level(spdlog::level::debug);
 
     ServerNetworkHandler::serverMOTD = Config::getMOTD();
     initHooks(handle);
@@ -199,6 +202,9 @@ void Loader::load(void *handle) {
 
     minecraftApp.automationClient = &aclient;
 
+    for(auto& fn : Loader::callAfterLoad){
+        fn(handle);
+    }
 
     spdlog::info("Starting server...");
     spdlog::debug("Server port: {0}", Config::getServerPort());
@@ -208,9 +214,12 @@ void Loader::load(void *handle) {
     statics::minecraft = instance->minecraft;
 
     spdlog::debug("Loading dimensions...");
+
     auto level = instance->minecraft->getLevel();
+    level->createDimension(0);
     level->createDimension(1);
     level->createDimension(2);
+
     std::chrono::duration<float> diff = std::chrono::system_clock::now() - timeAtLoadEntry;
     spdlog::debug("Dimensions loaded. Server started up for {0} ms.", diff.count()); //std::to_string(diff.count())
     auto tp = std::chrono::steady_clock::now();

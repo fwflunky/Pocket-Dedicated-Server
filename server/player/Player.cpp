@@ -138,3 +138,7 @@ std::pair<std::string, unsigned short> Player::getFuckingIpPortWithAccessToFucki
 void Player::remove() {
     Player_remove(this);
 }
+
+std::string Player::getLowerName() const {
+    return lowerNickHolder.at(identifier.id);
+}

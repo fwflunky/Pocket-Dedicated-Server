@@ -49,7 +49,6 @@ bool LoginChecks::checkOnSpawn(Player &p) { //todo block all packets if not spaw
 }
 
 bool LoginChecks::checkOnLogin(LoginPacket *login, const NetworkIdentifier &identifier) {
-    return true;
     auto [ip, port] = Player::ipsHolder.at(identifier.id);
 
     Json::Value val("");
@@ -77,8 +76,8 @@ bool LoginChecks::checkOnLogin(LoginPacket *login, const NetworkIdentifier &iden
     } catch (...) {
         spdlog::debug("Player {3} with identity {0} and IP {1}:{2} not registered", identity, ip, port, displayName);
         //TransferPacket packet; cant transfer on login
-        statics::minecraft->disconnectClient(identifier, "disconnectionScreen.notAuthenticated");
-        return false; //todo
+        //statics::minecraft->disconnectClient(identifier, "disconnectionScreen.notAuthenticated");
+        //return false; //todo
     }
 
     auto reason = Bans::isIpBanned(ip);
@@ -113,6 +112,7 @@ bool LoginChecks::checkOnLogin(LoginPacket *login, const NetworkIdentifier &iden
         return false;
     }
 
+    Player::lowerNickHolder.insert({identifier.id, lowerNick});
     spdlog::info("Player {3} with identity {0} and IP {1}:{2} connected", identity, ip, port, displayName);
     return true;
 }

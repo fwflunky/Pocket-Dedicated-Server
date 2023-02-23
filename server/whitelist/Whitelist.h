@@ -10,6 +10,8 @@
 class Whitelist {
 public:
     static inline std::set<std::string> allowedPlayers = {"ssss"};
+    static inline bool enabled = false;
+
     static void reloadFromFile();
     static bool byNickIsAllowed(const std::string& nick);
     static void initHooks(void* handle);

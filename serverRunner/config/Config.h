@@ -24,6 +24,9 @@ public:
 
     static std::string getWorldLevelName();
     static std::string getWorldLevelId();
+
+
+    static bool debugEnabled();
 };
 
 

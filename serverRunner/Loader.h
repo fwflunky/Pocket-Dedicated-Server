@@ -7,6 +7,7 @@
 
 
 #include <memory>
+#include <functional>
 #include "appPlatform/LinuxStore.h"
 #include "ServerInstance.h"
 
@@ -17,6 +18,9 @@ public:
     static inline ServerInstance* instance = nullptr;
     static inline bool isShutdown = false;
     static inline time_t pleaseDontStopBeforeThis = 0;
+
+    static inline std::vector<std::function<void(void* handle)>> callOnLoad;
+    static inline std::vector<std::function<void(void* handle)>> callAfterLoad;
 
     static void load(void* handle);
     static void handleCommand(const std::string& cmd);

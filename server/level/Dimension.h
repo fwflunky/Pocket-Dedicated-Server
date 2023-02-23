@@ -10,6 +10,7 @@
 #include "../network/packets/Packet.h"
 #include "LevelListener.h"
 #include "SavedData.h"
+#include "chunk/MainChunkSource.h"
 
 class Player;
 class Entity;
@@ -29,8 +30,10 @@ public:
 
     char filler[104];
     int dimensionId;
+    char filler1[74];
+    MainChunkSource* mainChunkSource;
 
-    void sendPacketForEntity(Entity&e , Packet&p, Player* pp);
+    void sendPacketForEntity(Entity&e, Packet&p, Player* pp);
     void sendPacketForPosition(BlockPos const &pos , Packet const&p, Player* pp);
     ChunkSource* getChunkSource();
 

@@ -297,6 +297,18 @@ void RegionGuard::initCommands() {
         }
         return true;
     });
+
+    CustomCommands::registerCommand("rg remove", [&](ServerPlayer* player, nlohmann::json& input) -> bool {
+        auto reg = RegionGuard::getRegion(player->nickname);
+        if (!reg) {
+            player->sendMessage("⋗ У Вас нет региона.");
+            return true;
+        }
+
+        RegionGuard::removeRegion(reg);
+        player->sendMessage("⋗ Регион удален");
+        return true;
+    });
 }
 
 void RegionGuard::handleStage(ServerPlayer *player, RegionGuard::tempCreation& stage) {
@@ -543,4 +555,16 @@ bool RegionGuard::handlePlayerHurted(ServerPlayer *player, const EntityDamageSou
         }
     }
     return true;
+}
+
+void RegionGuard::removeRegion(Region *pRegion) {
+    std::scoped_lock<std::mutex> lock(mux);
+
+    std::string owner = pRegion->regionOwnerName;
+    std::string name = pRegion->regionName;
+    playerRegions.erase(owner);
+
+    try {
+        std::filesystem::remove_all(spath +name);
+    } catch (...){}
 }

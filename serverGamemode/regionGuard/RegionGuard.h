@@ -44,6 +44,8 @@ public:
     static bool handleExplode(Entity* creature);
     static bool handlePlayerHurted(ServerPlayer* player, const EntityDamageSource &damageSource);
     static void startThreadedDraw(ServerPlayer* player, tempCreation& stage);
+
+    static void removeRegion(Region *pRegion);
 };
 
 
