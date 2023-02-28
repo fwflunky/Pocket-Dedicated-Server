@@ -12,7 +12,9 @@ namespace dataWrapper {
     public:
         explicit Item(ItemInstance* is);
         Item() = default;
-        ~Item() = default;
+        ~Item() {
+            delete itemInstance;
+        }
 
         virtual int getCount(const std::string& msg);
     private:

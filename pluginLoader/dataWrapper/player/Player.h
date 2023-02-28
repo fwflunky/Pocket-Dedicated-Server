@@ -12,7 +12,9 @@ namespace dataWrapper {
     public:
         explicit Player(ServerPlayer* sp);
         Player() = default;
-        ~Player() = default;
+        ~Player() {
+            delete player;
+        };
 
         virtual void sendMessage(const std::string& msg);
     private:
