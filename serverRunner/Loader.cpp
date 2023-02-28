@@ -38,6 +38,9 @@
 #include "../server/whitelist/Whitelist.h"
 #include "../serverGamemode/customPermissions/CustomPermissions.h"
 #include "../thirdParty/hybris/src/jb/linker.h"
+#include "../pluginLoader/PluginLoader.h"
+#include "../pluginLoader/PluginEventing.h"
+#include "../pluginLoader/events/level/block/BlockPrePlace.h"
 
 void Loader::initHooks(void *handle) {
     auto patchOff = (unsigned int) hybris_dlsym(handle, "_ZN12AndroidStore21createGooglePlayStoreERKSsR13StoreListener");
@@ -127,9 +130,13 @@ void Loader::initHooks(void *handle) {
 }
 
 void Loader::load(void *handle) {
+    for(auto& fn : Loader::callOnLoad){
+        fn(handle);
+    }
+
     auto timeAtLoadEntry = std::chrono::system_clock::now();
 
-    spdlog::set_pattern("[\033[1;34m%H:%M:%S\033[0m] [%^%l%$] [\033[1;4m\033[1;34mPDS\033[1;24m\033[0m] %v");
+    spdlog::set_pattern("[\033[1;34m%H:%M:%S\033[0m] [\033[1;4m\033[1;34mPDS\033[1;24m\033[0m] [%^%l%$] %v");
 
     spdlog::info("Starting Pocket Dedicated Server v{0}", PDSVER);
     Config::read();
@@ -205,6 +212,11 @@ void Loader::load(void *handle) {
     for(auto& fn : Loader::callAfterLoad){
         fn(handle);
     }
+
+    PluginEventing::PluginEventing::initEventing();
+
+    PluginLoader::loadPlugins(std::filesystem::current_path().string());
+    PluginLoader::callOnLoad();
 
     spdlog::info("Starting server...");
     spdlog::debug("Server port: {0}", Config::getServerPort());
@@ -314,11 +326,30 @@ void Loader::registerCtrlCHandler() {
 }
 
 void Loader::doOnStop() {
+    PluginLoader::callOnUnload();
     pleaseDontStopBeforeThis = time(nullptr) + 2;
+
     statics::runOnNextTick([]() {
         statics::serverNetworkHandler->mainLevel->saveGameData();
         for (auto *user: *statics::serverNetworkHandler->mainLevel->getUsers()) {
             statics::minecraft->disconnectClient(user->identifier, "disconnectionScreen.noReason");
         }
     });
+}
+
+void Loader::registerCallAfterLoad(std::function<void(void *)> fun) {
+    std::scoped_lock<std::mutex> lock(callMux);
+    callAfterLoad.push_back(std::move(fun));
+}
+
+void Loader::registerCallAfterLoad(std::function<void()> fun) {
+    std::scoped_lock<std::mutex> lock(callMux);
+    callAfterLoad.emplace_back([func = std::move(fun)](void* ) {
+        func();
+    });
+}
+
+void Loader::registerCallOnLoad(std::function<void(void *)> fun) {
+    std::scoped_lock<std::mutex> lock(callMux);
+    callOnLoad.push_back(std::move(fun));
 }

@@ -10,6 +10,7 @@ class BlockPos {
 public:
     BlockPos(float xx, float yy, float zz);
     BlockPos(int xx, int yy, int zz);
+    BlockPos();
 
     int x, y, z;
     std::string toString() const;

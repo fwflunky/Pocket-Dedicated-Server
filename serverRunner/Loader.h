@@ -12,22 +12,21 @@
 #include "ServerInstance.h"
 
 class Loader {
-public:
-    static void initHooks(void* handle);
-
+private:
     static inline ServerInstance* instance = nullptr;
     static inline bool isShutdown = false;
     static inline time_t pleaseDontStopBeforeThis = 0;
 
     static inline std::vector<std::function<void(void* handle)>> callOnLoad;
     static inline std::vector<std::function<void(void* handle)>> callAfterLoad;
+    static inline std::mutex callMux;
 
-    static void load(void* handle);
+    static void processCommands(char* lineBuffer, size_t& lineBufferOffset);
     static void handleCommand(const std::string& cmd);
-    static void stop();
+
     static void registerCtrlCHandler();
-    static void doOnStop();
     static void ctrlC(int);
+    static void doOnStop();
 
     struct basicPatches {
         class HTTPRequest;
@@ -88,7 +87,15 @@ public:
 
     };
 
-    static void processCommands(char* lineBuffer, size_t& lineBufferOffset);
+public:
+    static void initHooks(void* handle);
+
+    static void load(void* handle);
+    static void stop();
+
+    static void registerCallOnLoad(std::function<void(void* handle)> fun);
+    static void registerCallAfterLoad(std::function<void(void* handle)> fun);
+    static void registerCallAfterLoad(std::function<void()> fun);
 };
 
 

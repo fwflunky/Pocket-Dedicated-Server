@@ -7,9 +7,7 @@
 #include "../../../thirdParty/hybris/include/hybris/dlfcn.h"
 
 void MainChunkSource::onInit() {
-    Loader::callOnLoad.emplace_back([](void* h){
-        MainChunkSource::initHooks(h);
-    });
+    Loader::registerCallOnLoad(MainChunkSource::initHooks);
 }
 
 void MainChunkSource::initHooks(void *handle) {

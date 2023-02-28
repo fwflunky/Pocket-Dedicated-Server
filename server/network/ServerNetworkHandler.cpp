@@ -24,6 +24,8 @@
 #include "../../serverGamemode/loginChecks/LoginChecks.h"
 #include "spdlog/spdlog.h"
 #include "../../src/common.h"
+#include "../../pluginLoader/events/item/UseItemEvent.h"
+#include "../../pluginLoader/PluginEventing.h"
 #include <string>
 #include <cstring>
 #include <arpa/inet.h>
@@ -102,7 +104,15 @@ void ServerNetworkHandler::updateServerAnnouncement() {
 }
 
 void ServerNetworkHandler::handleUseItemPacket(const NetworkIdentifier &ident, UseItemPacket &pk) {
-    if (!RegionGuard::handleUseItem(_getServerPlayer(ident), pk)) {
+    auto ev = PluginEventing::UseItemEvent();
+    {
+        ev.player = new dataWrapper::Player(_getServerPlayer(ident)),
+        ev.pos = new dataWrapper::BlockPos({pk.x, pk.y, pk.z}),
+        ev.item = new dataWrapper::Item(&pk.item);
+    }
+    PluginEventing::PluginEventing::callEvent(ev);
+
+    if (ev.isCancelled() || !RegionGuard::handleUseItem(_getServerPlayer(ident), pk)) {
         return;
     }
 
@@ -183,6 +193,7 @@ void ServerNetworkHandler::customDisconnectHandler(ServerPlayer* sp, const std::
                     threadP->remove();
                     threadP->disconnect();
                     networkHandler->setCloseConnection(identifier);
+                    return true;
                 }
             });
             usleep(1000 * 10);

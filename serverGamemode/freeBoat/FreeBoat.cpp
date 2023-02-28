@@ -9,9 +9,7 @@
 #include "../../server/statics.h"
 
 void FreeBoat::onInit() {
-    Loader::callAfterLoad.emplace_back([](void* h){
-        FreeBoat::load();
-    });
+    Loader::registerCallAfterLoad(FreeBoat::load);
 }
 
 void FreeBoat::load() {

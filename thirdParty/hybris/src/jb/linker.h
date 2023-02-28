@@ -43,17 +43,17 @@ const char *addr_to_name(unsigned addr);
 
 /* magic shared structures that GDB knows about */
 
-struct link_map
+struct hybris_link_map
 {
     uintptr_t l_addr;
     char * l_name;
     uintptr_t l_ld;
-    struct link_map * l_next;
-    struct link_map * l_prev;
+    struct hybris_link_map * l_next;
+    struct hybris_link_map * l_prev;
 };
 
 /* needed for dl_iterate_phdr to be passed to the callbacks provided */
-struct dl_phdr_info
+struct hybris_dl_phdr_info
 {
     Elf32_Addr dlpi_addr;
     const char *dlpi_name;
@@ -62,17 +62,17 @@ struct dl_phdr_info
 };
 
 
-// Values for r_debug->state
+// Values for hybris_r_debug->state
 enum {
     RT_CONSISTENT,
     RT_ADD,
     RT_DELETE
 };
 
-struct r_debug
+struct hybris_r_debug
 {
     int32_t r_version;
-    struct link_map * r_map;
+    struct hybris_link_map * r_map;
     void (*r_brk)(void);
     int32_t r_state;
     uintptr_t r_ldbase;
@@ -140,7 +140,7 @@ struct soinfo
 #endif
 
     unsigned refcount;
-    struct link_map linkmap;
+    struct hybris_link_map linkmap;
 
     int constructors_called;
 
@@ -214,7 +214,7 @@ void call_constructors_recursive(soinfo *si);
 typedef long unsigned int *_Unwind_Ptr;
 _Unwind_Ptr dl_unwind_find_exidx(_Unwind_Ptr pc, int *pcount);
 #elif defined(ANDROID_X86_LINKER)
-int dl_iterate_phdr(int (*cb)(struct dl_phdr_info *, size_t, void *), void *);
+int dl_iterate_phdr(int (*cb)(struct hybris_dl_phdr_info *, size_t, void *), void *);
 #endif
 
 #endif

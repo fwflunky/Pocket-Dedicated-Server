@@ -2,13 +2,13 @@
 assets/
 data/
 tmp/
-jsoncpp-1.8.1/
 .cmake/
 screenshots/
 minecraftpe/
 Testing/
 cmake_install.cmake
 cmake-build-debug/
+cmake-build-release/
 CMakeFiles/
 CMakeCache.txt
 FindEGL.cmake

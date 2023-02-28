@@ -11,9 +11,7 @@
 #include "../../server/level/chunk/LevelChunk.h"
 
 void ClearLag::onInit() {
-    Loader::callAfterLoad.emplace_back([](void* h){
-        ClearLag::load();
-    });
+    Loader::registerCallAfterLoad(ClearLag::load);
 }
 
 void ClearLag::load() {

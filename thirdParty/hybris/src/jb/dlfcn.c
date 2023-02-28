@@ -179,7 +179,7 @@ int android_dlclose(void *handle)
     return 0;
 }
 
-int android_dl_iterate_phdr(int (*cb)(struct dl_phdr_info *info, size_t size, void *data),void *data);
+int android_dl_iterate_phdr(int (*cb)(struct hybris_dl_phdr_info *info, size_t size, void *data),void *data);
 
 #if defined(ANDROID_ARM_LINKER)
 //                     0000000 00011111 111112 22222222 2333333 333344444444445555555

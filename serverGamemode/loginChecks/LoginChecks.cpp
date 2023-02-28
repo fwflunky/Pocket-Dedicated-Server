@@ -108,8 +108,8 @@ bool LoginChecks::checkOnLogin(LoginPacket *login, const NetworkIdentifier &iden
     }
 
     if (!Whitelist::byNickIsAllowed(displayName)) { //not lower
-        statics::minecraft->disconnectClient(identifier, "disconnectionScreen.notAllowed");
-        return false;
+        //statics::minecraft->disconnectClient(identifier, "disconnectionScreen.notAllowed");
+        //return false;
     }
 
     Player::lowerNickHolder.insert({identifier.id, lowerNick});

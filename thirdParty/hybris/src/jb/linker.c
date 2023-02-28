@@ -60,7 +60,9 @@
 
 #define LDPRELOAD_BUFSIZE 512
 #define LDPRELOAD_MAX 8
-
+size_t
+strlcpy(char *dst, const char *src, size_t siz);
+void *get_hooked_symbol(const char *sym);
 /* >>> IMPORTANT NOTE - READ ME BEFORE MODIFYING <<<
  *
  * Do NOT use malloc() and friends or pthread_*() code here.
@@ -165,15 +167,15 @@ const char *linker_get_error(void)
  */
 extern void __attribute__((noinline)) rtld_db_dlactivity(void);
 
-static struct r_debug _r_debug = {1, NULL, &rtld_db_dlactivity,
+static struct hybris_r_debug _r_debug = {1, NULL, &rtld_db_dlactivity,
                                   RT_CONSISTENT, 0};
-static struct link_map *r_debug_tail = 0;
+static struct hybris_link_map *r_debug_tail = 0;
 
 static pthread_mutex_t _r_debug_lock = PTHREAD_MUTEX_INITIALIZER;
 
 static void insert_soinfo_into_debug_map(soinfo * info)
 {
-    struct link_map * map;
+    struct hybris_link_map * map;
 
     /* Copy the necessary fields into the debug structure.
      */
@@ -201,7 +203,7 @@ static void insert_soinfo_into_debug_map(soinfo * info)
 
 static void remove_soinfo_from_debug_map(soinfo * info)
 {
-    struct link_map * map = &(info->linkmap);
+    struct hybris_link_map * map = &(info->linkmap);
 
     if (r_debug_tail == map)
         r_debug_tail = map->l_prev;
@@ -363,11 +365,11 @@ _Unwind_Ptr android_dl_unwind_find_exidx(_Unwind_Ptr pc, int *pcount)
 /* Here, we only have to provide a callback to iterate across all the
  * loaded libraries. gcc_eh does the rest. */
 int
-android_dl_iterate_phdr(int (*cb)(struct dl_phdr_info *info, size_t size, void *data),
+android_dl_iterate_phdr(int (*cb)(struct hybris_dl_phdr_info *info, size_t size, void *data),
                 void *data)
 {
     soinfo *si;
-    struct dl_phdr_info dl_info;
+    struct hybris_dl_phdr_info dl_info;
     int rv = 0;
 
     for (si = solist; si != NULL; si = si->next) {
@@ -375,7 +377,7 @@ android_dl_iterate_phdr(int (*cb)(struct dl_phdr_info *info, size_t size, void *
         dl_info.dlpi_name = si->linkmap.l_name;
         dl_info.dlpi_phdr = si->phdr;
         dl_info.dlpi_phnum = si->phnum;
-        rv = cb(&dl_info, sizeof (struct dl_phdr_info), data);
+        rv = cb(&dl_info, sizeof (struct hybris_dl_phdr_info), data);
         if (rv != 0)
             break;
     }
@@ -2103,7 +2105,7 @@ static unsigned __linker_init_post_relocation(unsigned **elfdata)
     unsigned *vecs = (unsigned*) (argv + argc + 1);
     unsigned *v;
     soinfo *si;
-    struct link_map * map;
+    struct hybris_link_map * map;
     const char *ldpath_env = NULL;
     const char *ldpreload_env = NULL;
 

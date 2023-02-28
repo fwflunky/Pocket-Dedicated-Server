@@ -62,6 +62,7 @@
 #include "../serverGamemode/spawnColors/SpawnColors.h"
 #include "../serverGamemode/tpa/Tpa.h"
 #include "../serverGamemode/bans/Bans.h"
+#include "../pluginLoader/PluginEventing.h"
 
 #include "android_symbols.h"
 #include "egl_symbols.h"
@@ -74,13 +75,11 @@
 
 #define CWDD std::filesystem::current_path().string() + "/"
 #include <filesystem>
-
 extern "C" {
 #include "../thirdParty/hybris/include/hybris/dlfcn.h"
 #include "../thirdParty/hybris/include/hybris/hook.h"
 #include "../thirdParty/hybris/src/jb/linker.h"
 }
-
 void stubFunc() {
 }
 
@@ -90,7 +89,6 @@ int main(int argc, char *argv[]) {
         return 0;
     }
     registerCrashHandler();
-
     //auto glesLib = loadLibraryOS("libGLESv2.so", gles_symbols);
     //auto fmodLib = loadLibraryOS(getCWD() + "libs/native/libfmod.so.8.2", fmod_symbols);
     stubSymbols(android_symbols, (void *) stubFunc);
@@ -116,9 +114,9 @@ int main(int argc, char *argv[]) {
     //unsigned int libBase = ((soinfo *) handle)->base;
     //std::cout << "loaded MCPE (at " << libBase << ")\n";
 
-    for(auto& fn : Loader::callOnLoad){
-        fn(handle);
-    }
+    //for(auto& fn : Loader::callOnLoad){
+   //     fn(handle);
+    //}
     NetworkIdentifier::initHooks(handle);
     ServerNetworkHandler::initHooks(handle);
     Entity::initHooks(handle);

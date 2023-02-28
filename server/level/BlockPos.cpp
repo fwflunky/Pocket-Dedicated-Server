@@ -23,3 +23,9 @@ BlockPos::BlockPos(int xx, int yy, int zz) {
 bool BlockPos::operator==(const BlockPos &pos) const {
     return x == pos.x && y == pos.y && z == pos.z;
 }
+
+BlockPos::BlockPos() {
+    x = 0;
+    y = 0;
+    z = 0;
+}
