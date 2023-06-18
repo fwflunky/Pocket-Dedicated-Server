@@ -134,3 +134,4 @@ add_executable(pdserver ${LIBJSON_SOURCES} ${SPDLOG_SOURCES} ${HYBRIS_SOURCES} $
 target_link_libraries(pdserver ${CMAKE_DL_LIBS} ${CMAKE_THREAD_LIBS_INIT} rt ${CMAKE_SOURCE_DIR}/thirdParty/boost/filesystem/libboost_filesystem.a ${CMAKE_SOURCE_DIR}/thirdParty/leveldb/build/libleveldb.a uuid /usr/lib32/libcrypto.so /usr/lib32/libssl.so)
 target_compile_definitions(pdserver PRIVATE ANDROID_X86_LINKER _GNU_SOURCE LINKER_TEXT_BASE=0xB0000100 LINKER_AREA_SIZE=0x01000000 LINKER_DEBUG=1)
 set_target_properties(pdserver PROPERTIES COMPILE_FLAGS "-m32" LINK_FLAGS "-m32")
+#ss
