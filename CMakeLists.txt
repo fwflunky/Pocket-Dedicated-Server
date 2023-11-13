@@ -12,8 +12,6 @@ include_directories(thirdParty/jsoncpp-1.8.1/include)
 include_directories(thirdParty/range-v3/include)
 include_directories(thirdParty/leveldb/include)
 include_directories(thirdParty/spdlog-1.x/include)
-include_directories(thirdParty/boost/filesystem/include)
-include_directories(thirdParty/boost/format/include)
 include_directories(thirdParty/nlohmann/include)
 find_package(Boost COMPONENTS filesystem REQUIRED)
 
