@@ -22,7 +22,7 @@ void PluginLoader::loadPlugins(const std::string &path) {
                     spdlog::error("\"PDSPlugin\" symbol doesn't exists in plugin {0}", ppath);
                     throw std::exception();
                 }
-                plugin.thisPlugin = boost::dll::import_symbol<PluginInterface>(
+                plugin.thisPlugin = boost::dll::import<PluginInterface>(
                         plugin.lib,
                         "PDSPlugin"
                 );
