@@ -8,7 +8,7 @@
 #include <chrono>
 #include <vector>
 #include "level/LevelSettings.h"
-
+#include <string>
 class IMinecraftApp;
 class Minecraft;
 class OriginalOpsList;
