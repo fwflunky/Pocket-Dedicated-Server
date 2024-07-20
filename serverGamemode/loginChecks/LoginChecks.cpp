@@ -23,27 +23,9 @@ bool LoginChecks::checkOnSpawn(Player &p) { //todo block all packets if not spaw
 
     p.sendInventory();
 
-    //statics::serverNetworkHandler->_displayGameMessage("§l§bAtmosphere§f'PE§r", "§bИгрок §f" + p.nickname + " §bприсоединился §fк игре");
-    statics::serverNetworkHandler->_displayGameMessage("", "§eТекущий онлайн " + std::to_string(statics::serverNetworkHandler->_getActivePlayerCount()) + " игроков (-а)");
 
-    p.sendMessage(p.getFuckingIpPortWithAccessToFuckingRakNetBruh().first);
-
-    std::thread([id = p.identifier]() {
-        sleep(2);
-        SetTitlePacket pk;
-
-        pk.fadeIn = 3;
-        pk.fadeOut = 1;
-        pk.duration = 3;
-
-        pk.type = 3;
-        pk.title = "§f§lPE";
-        statics::serverNetworkHandler->networkHandler->send(id, pk);
-
-        pk.type = 2;
-        pk.title = "§bAtmosphere";
-        statics::serverNetworkHandler->networkHandler->send(id, pk);
-    }).detach();
+    statics::serverNetworkHandler->_displayGameMessage("§7[§l§cFad§fWix§r§7]", "§r§eИгрок §f" + p.nickname + " §eприсоединился к игре");
+     p.sendMessage("§eТекущий онлайн " + std::to_string(statics::serverNetworkHandler->_getActivePlayerCount()) + " игроков (-а)");
 
     return true;
 }
@@ -124,3 +106,4 @@ void LoginChecks::checkOnDisconnect(const NetworkIdentifier &identifier, const s
     auto ip = player->getFuckingIpPortWithAccessToFuckingRakNetBruh();
     spdlog::debug("LoginChecks::checkOnDisconnect: player {0} ({1}:{2}) disconnected with reason: {3}", player->nickname, ip.first, ip.second, reason);
 }
+

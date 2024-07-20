@@ -9,7 +9,7 @@
 class HotBar {
 public:
     static void scheduleUpdate();
-    static inline std::string base = "§7Atmosphere PE";
+    static inline std::string base = "";
     static inline std::string current;
     static inline bool needBlink = false;
     static inline int blinkTicks = 0;

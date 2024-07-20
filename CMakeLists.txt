@@ -15,7 +15,7 @@ include_directories(thirdParty/spdlog-1.x/include)
 include_directories(thirdParty/nlohmann/include)
 find_package(Boost COMPONENTS filesystem REQUIRED)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-pmf-conversions -std=c++23 -D_GLIBCXX_USE_CXX11_ABI=0")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-return-type -Wno-pmf-conversions -std=c++23 -D_GLIBCXX_USE_CXX11_ABI=0")
 
 set(HYBRIS_SOURCES thirdParty/hybris/src/strlcpy.c thirdParty/hybris/src/cache.c thirdParty/hybris/src/dlfcn.c thirdParty/hybris/src/hooks.c thirdParty/hybris/src/hooks_shm.c thirdParty/hybris/src/logging.c thirdParty/hybris/src/properties.c thirdParty/hybris/src/ctype.c thirdParty/hybris/src/sysconf.c thirdParty/hybris/src/jb/dlfcn.c thirdParty/hybris/src/jb/linker.c thirdParty/hybris/src/jb/linker_environ.c thirdParty/hybris/src/jb/linker_format.c thirdParty/hybris/src/jb/rt.c thirdParty/hybris/src/hooks_pthread.c thirdParty/hybris/src/hooks_dirent.c thirdParty/hybris/src/hooks_io.c thirdParty/hybris/src/hooks_net.c)
 set(LIBJSON_SOURCES thirdParty/jsoncpp-1.8.1/src/lib_json/json_reader.cpp thirdParty/jsoncpp-1.8.1/src/lib_json/json_value.cpp thirdParty/jsoncpp-1.8.1/src/lib_json/json_writer.cpp)
@@ -126,10 +126,13 @@ set(SOURCE_FILES
         src/main.cpp
         src/common.cpp
         src/hook.cpp
-        serverRunner/appPlatform/LinuxAppPlatform.cpp serverGamemode/hotBar/HotBar.cpp serverGamemode/hotBar/HotBar.h serverGamemode/customPermissions/CustomPermissions.cpp serverGamemode/customPermissions/CustomPermissions.h serverGamemode/clearLag/ClearLag.cpp serverGamemode/clearLag/ClearLag.h server/level/chunk/MainChunkSource.cpp server/level/chunk/MainChunkSource.h pluginLoader/PluginLoader.cpp pluginLoader/PluginEventing.cpp pluginLoader/PluginEventing.h pluginLoader/events/level/block/BlockPrePlace.h pluginLoader/events/EventObject.cpp pluginLoader/events/EventObject.h pluginLoader/dataWrapper/player/Player.cpp pluginLoader/dataWrapper/player/Player.h pluginLoader/dataWrapper/item/Item.cpp pluginLoader/dataWrapper/item/Item.h pluginLoader/dataWrapper/level/BlockPos.cpp pluginLoader/dataWrapper/level/BlockPos.h)
+        serverRunner/appPlatform/LinuxAppPlatform.cpp serverGamemode/hotBar/HotBar.cpp serverGamemode/hotBar/HotBar.h serverGamemode/customPermissions/CustomPermissions.cpp serverGamemode/customPermissions/CustomPermissions.h serverGamemode/clearLag/ClearLag.cpp serverGamemode/clearLag/ClearLag.h server/level/chunk/MainChunkSource.cpp server/level/chunk/MainChunkSource.h
+)
 
 add_executable(pdserver ${LIBJSON_SOURCES} ${SPDLOG_SOURCES} ${HYBRIS_SOURCES} ${SOURCE_FILES})
-target_link_libraries(pdserver ${CMAKE_DL_LIBS} ${CMAKE_THREAD_LIBS_INIT} rt ${CMAKE_SOURCE_DIR}/thirdParty/boost/filesystem/libboost_filesystem.a ${CMAKE_SOURCE_DIR}/thirdParty/leveldb/build/libleveldb.a uuid /usr/lib32/libcrypto.so /usr/lib32/libssl.so)
+target_link_libraries(pdserver ${CMAKE_DL_LIBS} ${CMAKE_THREAD_LIBS_INIT} rt ${CMAKE_SOURCE_DIR}/thirdParty/boost/filesystem/libboost_filesystem.a ${CMAKE_SOURCE_DIR}/thirdParty/leveldb/build/libleveldb.a uuid /usr/lib/i386-linux-gnu/libcrypto.so /usr/lib/i386-linux-gnu/libssl.so)
 target_compile_definitions(pdserver PRIVATE ANDROID_X86_LINKER _GNU_SOURCE LINKER_TEXT_BASE=0xB0000100 LINKER_AREA_SIZE=0x01000000 LINKER_DEBUG=1)
 set_target_properties(pdserver PROPERTIES COMPILE_FLAGS "-m32" LINK_FLAGS "-m32")
+
 #ss
+

@@ -1,7 +1,3 @@
-//
-// Created by user on 17.02.23.
-//
-
 #include "PetHelper.h"
 #include "../../server/player/ServerPlayer.h"
 
@@ -18,20 +14,20 @@ namespace PetHelper {
                 if (!owner) {
                     //owner offline
                     if (damager && damager->maybeEntityType == 30)
-                        ((ServerPlayer *) damager)->sendPopup("Вы пытаетесь ударить волка, владелец которого не в сети");
+                        ((ServerPlayer *) damager)->sendMessage("§l§7⋗ §r§cВы пытаетесь ударить волка, владелец которого не в сети.");
                     return false;
                 } else if (damager && wolf->isSitting()) {
                     if (damager->maybeEntityType == 30)
-                        ((ServerPlayer *) damager)->sendPopup("Вы пытаетесь ударить сидящего волка");
+                        ((ServerPlayer *) damager)->sendMessage("§l§7⋗ §r§cВы пытаетесь ударить сидящего волка.");
                     return false;
                 } else if (damager && wolf->getDimension() != owner->getDimension() || wolf->distanceTo(*owner) > 30) {
                     std::string nick = "Кто-то";
                     if (damager->maybeEntityType == 30) {
                         nick = ((ServerPlayer *) damager)->nickname;
-                        ((ServerPlayer *) damager)->sendPopup("Вы пытаетесь ударить волка, владелец которого находится далеко от него");
+                        ((ServerPlayer *) damager)->sendMessage("§l§7⋗ §r§cВы пытаетесь ударить волка, владелец которого находится далеко от него.");
                     }
 
-                    owner->sendPopup(nick + " пытается ударить вашего волка, но вы находитесь далеко от него. Урон отменен");
+                    owner->sendMessage(nick + " пытается ударить вашего волка, но вы находитесь далеко от него. Урон отменен.");
                     return false;
                 }
             } else if(cause == 6 || cause == 7 || cause == 8){ //burn
@@ -45,7 +41,7 @@ namespace PetHelper {
                     return false;
                 } else if (wolf->getDimension() != owner->getDimension() || wolf->distanceTo(*owner) > 30) { //todo change wolf dimension
                     if(cause == 7) { //don't spam
-                        owner->sendMessage("⋗ Ваш волк горит, но вы находитесь далеко от него. Ему выдан эффект защиты от горения на минуту.");
+                        owner->sendMessage("§l§7⋗ §r§7Ваш волк горит, но вы находитесь далеко от него. Ему выдан эффект защиты от горения на минуту.");
                         ((Mob*) wolf)->addEffect({12, 20*60, 1});
                     }
                     return false;

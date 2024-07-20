@@ -13,21 +13,20 @@ void FreeBoat::onInit() {
 }
 
 void FreeBoat::load() {
-    spdlog::info("FreeBoat loaded");
     CustomCommands::registerCommand("freeboat", [&](ServerPlayer* player, nlohmann::json& input) -> bool {
         clearWaitFor(player->getLowerName());
         if(isWait(player->getLowerName())){
-            player->sendMessage("⋗ Вы уже брали лодку. Повторите попытку позже");
+            player->sendMessage("§l§7⋗ §r§cВы уже брали лодку. Повторите попытку позже.");
             return true;
         }
         ItemInstance boat(333, 1, 3);
         if(!player->inventoryProxy->canAdd(boat)){
-            player->sendMessage("⋗ В инвентаре недостаточно места для добавления лодки");
+            player->sendMessage("§l§7⋗ §r§7В инвентаре недостаточно места для добавления лодки.");
             return true;
         }
         addWaitFor(player->getLowerName());
         player->addItem(boat);
-        player->sendMessage("⋗ Вы получили лодку");
+        player->sendMessage("§l§7⋗ §r§7Вы получили лодку.");
         return true;
     });
 }

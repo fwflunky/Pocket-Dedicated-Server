@@ -25,8 +25,8 @@ BlockIDAndData BlockSource::getBlockAndData(BlockPos const&p) {
     return BlockSource_getBlockAndData(this, p);
 }
 
-BlockSource::BlockSource(Level &l, Dimension &d, ChunkSource &c, bool b, bool bb) {
-    BlockSource_ctor(this, l,d,c,b,bb);
+BlockSource::BlockSource(Level &l, Dimension &d, ChunkSource &c, bool asListener, bool bb) {
+    BlockSource_ctor(this, l,d,c,asListener,bb);
 }
 
 Block* BlockSource::getBlock(const BlockPos & b) {

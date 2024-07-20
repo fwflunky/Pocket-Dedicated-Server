@@ -19,13 +19,13 @@ void Bans::init() {
             auto bantype = input["ban type"].get<std::string>();
             auto reason = input["reason"].get<std::string>();
             if(reason.empty()) {
-                player->sendMessage("Укажите причину бана");
+                player->sendMessage("§l§7⋗ §r§cУкажите причину бана");
             }
             auto targetNick = input["player"]["rules"][0]["value"].get<std::string>();
             std::transform(targetNick.begin(), targetNick.end(), targetNick.begin(),
                            [](unsigned char c) { return std::tolower(c); });
             if (input["player"]["selector"].get<std::string>() != "nearestPlayer") {
-                player->sendMessage("Укажите конкретный ник игрока. Использовать обобщения может только оператор.");
+                player->sendMessage("§l§7⋗ §r§cУкажите конкретный ник игрока. Использовать обобщения может только оператор.");
                 return false;
             }
 
@@ -56,12 +56,9 @@ bool Bans::banIp(const std::string &ip, const std::string &reason) {
 }
 
 std::string Bans::isIpBanned(const std::string &ip) {
-    std::cout << "isb " << ip.size() << "\n";
     std::scoped_lock<std::mutex> lock(mux);
-
     std::string result;
     db->Get(leveldb::ReadOptions(), ip, &result);
-    std::cout << "isb res: " << result << "\n";
     return result;
 }
 
@@ -78,12 +75,11 @@ void Bans::continueBanIp(ServerPlayer *adminPlayer, const std::string &targetNic
         }
     }
     if (!receiver) {
-        return adminPlayer->sendMessage("Указанный игрок не в сети.");
+        return adminPlayer->sendMessage("§l§7⋗ §r§cУказанный игрок не в сети.");
     }
 
     banIp(receiver->getFuckingIpPortWithAccessToFuckingRakNetBruh().first, reason);
    // receiver->close();
-    adminPlayer->sendMessage("Указанный игрок успешно заблокирован.");
+    adminPlayer->sendMessage("§l§7⋗ §r§7Указанный игрок успешно заблокирован.");
     statics::minecraft->disconnectClient(receiver->identifier, ""); //не показывать причину
 }
-

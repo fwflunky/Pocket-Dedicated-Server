@@ -30,7 +30,7 @@ void SpawnColors::initThreads() {
         try {
             int type = (input["type"].get<std::string >() == "c") ? 1 : 0;
             player->setPlayerGameType(type);
-            player->sendMessage("⋗ Игровой режим изменен");
+            player->sendMessage("§l§7⋗ §r§7Игровой режим изменен.");
         } catch(...){
             player->sendMessageTranslated("§c%commands.generic.exception", {});
             return true;
@@ -43,14 +43,14 @@ bool SpawnColors::tryRTP(ServerPlayer *p) {
     std::scoped_lock<std::mutex> lock(mux);
 
     if (p->getDimension()->dimensionId != 0) {
-        p->sendMessage("⋗ Для совершения телепортации нужно находиться в обычном мире");
+        p->sendMessage("§l§7⋗ §r§cДля совершения телепортации нужно находиться в обычном мире!");
         return false;
     } else if (rtpPrepares.contains(p->nickname)) {
-        p->sendMessage("⋗ Поиск точки телепортации уже начат, подождите");
+        p->sendMessage("§l§7⋗ §r§cПоиск точки телепортации уже начат, подождите!");
         return false;
     }
 
-    p->sendMessage("⋗ Поиск точки телепортации, подождите");
+    p->sendMessage("§l§7⋗ §r§7Поиск точки телепортации, подождите.");
     rtpPrepares.insert(p->nickname);
 
     std::thread([p, nick = p->nickname]() {
@@ -73,7 +73,7 @@ bool SpawnColors::tryRTP(ServerPlayer *p) {
             return statics::runOnNextTick([p]() {
                 if (!p)
                     return;
-                p->sendMessage("⋗ Не удалось найти точку телепортации. Попробуйте ещё раз (1)");
+                p->sendMessage("§l§7⋗ §r§cНе удалось найти точку телепортации. Попробуйте ещё раз (1).");
             });
         }
         //todo check for load failed
@@ -91,7 +91,7 @@ bool SpawnColors::tryRTP(ServerPlayer *p) {
             return statics::runOnNextTick([p]() {
                 if (!p)
                     return;
-                p->sendMessage("⋗ Не удалось найти точку телепортации. Попробуйте ещё раз");
+                p->sendMessage("§l§7⋗ §r§cНе удалось найти точку телепортации. Попробуйте ещё раз.");
             });
         }
         spos.y = (float) floorY + 2;
@@ -130,7 +130,7 @@ bool SpawnColors::tryRTP(ServerPlayer *p) {
                 return;
             p->teleportTo(spos, 0, 0);
             statics::serverNetworkHandler->networkHandler->send(p->identifier, mpk);
-            p->sendMessage("⋗ Телепортирован на точку случайной телепортации");
+            p->sendMessage("§l§7⋗ §r§7Телепортирован на точку случайной телепортации.");
         });
     }).detach();
     return true;
@@ -140,14 +140,14 @@ bool SpawnColors::toSpawn(ServerPlayer *p) {
     std::scoped_lock<std::mutex> lock(mux);
 
     if (p->getDimension()->dimensionId != 0) {
-        p->sendMessage("⋗ Для совершения телепортации нужно находиться в обычном мире");
+        p->sendMessage("§l§7⋗ §r§cДля совершения телепортации нужно находиться в обычном мире!");
         return false;
     } else if (spawnPrepares.contains(p->nickname)) {
-        p->sendMessage("⋗ Загрузка точки спавна уже начата, подождите");
+        p->sendMessage("§l§7⋗ §r§cЗагрузка точки спавна уже начата, подождите!");
         return false;
     }
 
-    p->sendMessage("⋗ Загрузка точки спавна, подождите");
+    p->sendMessage("§l§7⋗ §r§7Загрузка точки спавна, подождите.");
     spawnPrepares.insert(p->nickname);
 
     std::thread([p]() {
@@ -180,7 +180,7 @@ bool SpawnColors::toSpawn(ServerPlayer *p) {
             return statics::runOnNextTick([p]() {
                 if (!p)
                     return;
-                p->sendMessage("⋗ Не удалось загрузить точку спавна. Попробуйте ещё раз (1)");
+                p->sendMessage("§l§7⋗ §r§cНе удалось загрузить точку спавна. Попробуйте ещё раз (1).");
             });
         }
         //todo check for load failed
@@ -205,7 +205,7 @@ bool SpawnColors::toSpawn(ServerPlayer *p) {
                 return;
             p->teleportTo(spos, 0, 0);
             statics::serverNetworkHandler->networkHandler->send(p->identifier, mpk);
-            p->sendMessage("⋗ Телепортирован на точку спавна");
+            p->sendMessage("§l§7⋗ §r§cТелепортирован на точку спавна.");
             spawnPrepares.erase(p->nickname);
         });
     }).detach();

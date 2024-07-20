@@ -104,15 +104,7 @@ void ServerNetworkHandler::updateServerAnnouncement() {
 }
 
 void ServerNetworkHandler::handleUseItemPacket(const NetworkIdentifier &ident, UseItemPacket &pk) {
-    auto ev = PluginEventing::UseItemEvent();
-    {
-        ev.player = new dataWrapper::Player(_getServerPlayer(ident)),
-        ev.pos = new dataWrapper::BlockPos({pk.x, pk.y, pk.z}),
-        ev.item = new dataWrapper::Item(&pk.item);
-    }
-    PluginEventing::PluginEventing::callEvent(ev);
-
-    if (ev.isCancelled() || !RegionGuard::handleUseItem(_getServerPlayer(ident), pk)) {
+    if (!RegionGuard::handleUseItem(_getServerPlayer(ident), pk)) {
         return;
     }
 
@@ -174,13 +166,14 @@ void ServerNetworkHandler::onDisconnect(const NetworkIdentifier &identifier, con
         LoginChecks::checkOnDisconnect(identifier, reason);
         Player::ipsHolder.erase(identifier.id);
         Player::lowerNickHolder.erase(identifier.id);
-        ((void (*)(LevelStorage *, Player &)) statics::serverNetworkHandler->mainLevel->levelStorage->vtable[15])(statics::serverNetworkHandler->mainLevel->levelStorage, *sp); //DBStorage::save
-        customDisconnectHandler(sp, reason, hide);
+        //((void (*)(LevelStorage *, Player &)) statics::serverNetworkHandler->mainLevel->levelStorage->vtable[15])(statics::serverNetworkHandler->mainLevel->levelStorage, *sp); //DBStorage::save
+       // customDisconnectHandler(sp, reason, hide);
     }
+    ServerNetworkHandler_onDisconnect(this, identifier, reason, hide);
 }
 
 void ServerNetworkHandler::customDisconnectHandler(ServerPlayer* sp, const std::string &reason, bool hide) {
-    std::thread([&, identifier = sp->identifier, reason, nick = sp->nickname]() {
+  /*  std::thread([&, identifier = sp->identifier, reason, nick = sp->nickname]() {
         spdlog::debug("customDisconnectHandler: got player {0}", nick);
 
         auto b = true;
@@ -204,5 +197,5 @@ void ServerNetworkHandler::customDisconnectHandler(ServerPlayer* sp, const std::
             statics::serverNetworkHandler->mainLevel->forceFlushRemovedPlayers();
             statics::serverNetworkHandler->updateServerAnnouncement();
         });
-    }).detach();
+    }).detach();*/
 }

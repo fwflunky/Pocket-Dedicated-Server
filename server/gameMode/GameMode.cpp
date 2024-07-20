@@ -43,7 +43,7 @@ bool GameMode::useItemOn(Player &p, ItemInstance &i, const BlockPos &pos, char c
 
    // auto tt = p.inventoryProxy->getSelectedSlot();m
     std::cout << "count is " << (int) p.inventoryProxy->getSlots()[p.inventoryProxy->selectedSlot]->count << "\n";
-    auto bs = BlockSource(*p.getLevel(), *p.getDimension(), *p.getDimension()->getChunkSource(), true, false);
+    auto bs = BlockSource(*p.getLevel(), *p.getDimension(), *p.getDimension()->getChunkSource(), false, false);
     //std::cout << (int) bs.getBlockID(pos)<< " is block tapped\n";
   //  auto cb = bs.getBlockID(pos);
     auto tt = bs.getBlockAndData(pos);

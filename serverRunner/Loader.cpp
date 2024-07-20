@@ -213,11 +213,6 @@ void Loader::load(void *handle) {
         fn(handle);
     }
 
-    PluginEventing::PluginEventing::initEventing();
-
-    PluginLoader::loadPlugins(std::filesystem::current_path().string());
-    PluginLoader::callOnLoad();
-
     spdlog::info("Starting server...");
     spdlog::debug("Server port: {0}", Config::getServerPort());
     instance = new ServerInstance(minecraftApp, wl, ops, &filePathManager, std::chrono::duration_cast<std::chrono::duration<long long>>(std::chrono::seconds(40)), Config::getWorldLevelId(), Config::getWorldLevelName(), "motd", "", "sdsd", settings, api, 8, true, Config::getServerPort(), Config::getServerPort(), Config::getMaxOnline(), false, {}, "normal", false, *mce::UUID::EMPTY, eventing, resourcePackRepo, resourcePackManager, &resourcePackManager);
@@ -326,7 +321,6 @@ void Loader::registerCtrlCHandler() {
 }
 
 void Loader::doOnStop() {
-    PluginLoader::callOnUnload();
     pleaseDontStopBeforeThis = time(nullptr) + 2;
 
     statics::runOnNextTick([]() {

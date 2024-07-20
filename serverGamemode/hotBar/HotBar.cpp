@@ -44,3 +44,4 @@ void HotBar::scheduleUpdate() {
         }
     }).detach();
 }
+
