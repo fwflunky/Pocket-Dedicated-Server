@@ -1,5 +1,10 @@
 ![Logo](https://i.ibb.co/rbzqcPc/20230215-225158.png)
 
+# Дисклеймер 
+Написано на коленке, за говно не ручаюсь, писалось не для опенсруса но так уж получилось что оно попало сюда
+<br/>
+Для запуска нужно редачить симейк чтобы тянулись либы из правильного места
+
 # Pocket Dedicated Server
 Vanilla (or not so) server software for [Minecraft: Pocket Edition 1.1](https://minecraft.fandom.com/wiki/Pocket_Edition_1.1.0)
 ## Features
